@@ -20,14 +20,14 @@ function MyApp({ Component, pageProps }) {
   };
 
   return (
-    <ThirdwebWeb3Provider
-      connectors={connectors}
-      supportedChainIds={supportedChainIds}
-    >
       <ChakraProvider theme={theme}>
-        <Component {...pageProps} />
+        <ThirdwebWeb3Provider
+          connectors={connectors}
+          supportedChainIds={supportedChainIds}
+        >
+          <Component {...pageProps} />
+        </ThirdwebWeb3Provider>
       </ChakraProvider>
-    </ThirdwebWeb3Provider>
   );
 }
 

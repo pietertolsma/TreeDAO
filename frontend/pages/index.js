@@ -6,6 +6,10 @@ import { ThirdwebSDK } from "@3rdweb/sdk";
 import { useEffect, useState } from 'react';
 
 import sdk from "../scripts/1-initialize-sdk";
+import VisitorComponent from '../components/VisitorComponent';
+import LandingView from '../components/LandingView';
+import HeaderComponent from '../components/HeaderComponent';
+import MemberView from '../components/MemberComponent';
 
 const bundleDropModule = sdk.getBundleDropModule(
   "0x156E3800528CC8604C77788f9d629D47113479d4",
@@ -18,78 +22,26 @@ export default function Home() {
   const signer = provider ? provider.getSigner() : undefined;
 
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
-  const [isClaiming, setIsClaiming] = useState(false);
 
   useEffect(() => {
     sdk.setProviderOrSigner(signer);
   }, [signer]);
 
-  useEffect(() => {
-    if (!address) return;
-
-    return bundleDropModule
-        .balanceOf(address, "0") // "0" = tokenId
-        .then((balance) => {
-          if (balance.gt(0)) {
-            setHasClaimedNFT(true);
-            console.log(
-              `🌊 You are a member! Check it our on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address.toLowerCase()}/0`
-            );
-          } else {
-            setHasClaimedNFT(false);
-          }
-        })
-        .catch((error) => {
-          setHasClaimedNFT(false);
-          console.log("Failed to get NFT balance", error);
-        });
-  }, [address]);
-
-  const mintNft = () => {
-    setIsClaiming(true);
-    bundleDropModule
-      .claim("0", 1)
-      .then(() => {
-        setHasClaimedNFT(true);
-        console.log(
-          `🌊 Successfully Minted! Check it our on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address.toLowerCase()}/0`
-        );
-      })
-      .catch((err) => {
-        console.error("Failed to claim :(", err);
-      })
-      .finally(() => {
-        setIsClaiming(false);
-      });
-  }
-
   const memberView = (
-    <Text>You are a member! Awesome!</Text>
+    <MemberView />
   )
 
-  const nonMemberView = (
-    <Flex direction="column">
-      <Text>You are not a member yet.</Text>
-      <Button disabled={isClaiming} onClick={() => mintNft()}>
-        {isClaiming ? "Minting..." : "Click here to mint your free membership!"}
-      </Button>
-    </Flex>
+  const visitorView = (
+    <VisitorComponent address={address} provider={provider} setHasClaimedNFT={setHasClaimedNFT}/>
   )
   
   const connect = (
-    <Flex direction="column">
-      <Heading>Hello World!</Heading>
-      <Button onClick={() => connectWallet("injected")}>
-              Connect your Wallet
-      </Button>
-    </Flex>
+    <LandingView connectWallet={connectWallet}/>
   )
 
   const connected = (
     <Flex direction="column">
-      <Heading>Wallet Connected!</Heading>
-      <Text>Connected address: {address}</Text>
-      {hasClaimedNFT ? memberView : nonMemberView}
+      {hasClaimedNFT ? memberView : visitorView}
     </Flex>
   )
 
@@ -102,13 +54,14 @@ export default function Home() {
       </Head>
 
       <main>
-        <Center h="100vh" textAlign="center">
+        <HeaderComponent address={address} isMember={hasClaimedNFT} connectWallet={connectWallet}/>
+        <Box h="100vh" maxWidth="1200px" m="0 auto" textAlign="center">
           {address ? connected : connect}
-        </Center>
+        </Box>
       </main>
 
       <footer>
-        <Center dir>
+        <Center>
           <Text>This site was made for education purposes by Pieter Tolsma</Text>
           <Link href="https://github.com/pietertolsma/TreeDAO">Github</Link>
         </Center>
