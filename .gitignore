@@ -25,6 +25,7 @@
 /frontend/yarn-error.log*
 
 # local env files
+/frontend/.env
 /frontend/.env.local
 /frontend/.env.development.local
 /frontend/.env.test.local
@@ -32,3 +33,5 @@
 
 # vercel
 /frontend/.vercel
+
+.env
