@@ -50,10 +50,10 @@ export default function HeaderComponent({ address, isMember, connectWallet }) {
     )
 
     const memberNav = (
-        <Flex>
+        <Stack direction="row">
             <Link href="#">Home</Link>
-            <Link href="#">Members</Link>
-        </Flex>
+            <Link href="/lounge">Lounge</Link>
+        </Stack>
     )
 
     const nonMemberNav = (

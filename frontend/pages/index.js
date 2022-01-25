@@ -9,30 +9,28 @@ import sdk from "../scripts/1-initialize-sdk";
 import VisitorComponent from '../components/VisitorComponent';
 import LandingView from '../components/LandingView';
 import HeaderComponent from '../components/HeaderComponent';
-import MemberView from '../components/MemberComponent';
+import MemberView from '../components/MemberView';
 
 const bundleDropModule = sdk.getBundleDropModule(
   "0x156E3800528CC8604C77788f9d629D47113479d4",
 );
 
-export default function Home() {
+export default function Home({isMember, setIsMember}) {
 
   const { connectWallet, address, error, provider } = useWeb3();
 
   const signer = provider ? provider.getSigner() : undefined;
-
-  const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
 
   useEffect(() => {
     sdk.setProviderOrSigner(signer);
   }, [signer]);
 
   const memberView = (
-    <MemberView />
+    <MemberView isMember={isMember}/>
   )
 
   const visitorView = (
-    <VisitorComponent address={address} provider={provider} setHasClaimedNFT={setHasClaimedNFT}/>
+    <VisitorComponent address={address} provider={provider} setHasClaimedNFT={setIsMember}/>
   )
   
   const connect = (
@@ -41,7 +39,7 @@ export default function Home() {
 
   const connected = (
     <Flex direction="column">
-      {hasClaimedNFT ? memberView : visitorView}
+      {isMember ? memberView : visitorView}
     </Flex>
   )
 
@@ -54,7 +52,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <HeaderComponent address={address} isMember={hasClaimedNFT} connectWallet={connectWallet}/>
+        <HeaderComponent address={address} isMember={isMember} connectWallet={connectWallet}/>
         <Box h="100vh" maxWidth="1200px" m="0 auto" textAlign="center">
           {address ? connected : connect}
         </Box>

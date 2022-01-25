@@ -1,5 +1,6 @@
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import {ThirdwebWeb3Provider} from '@3rdweb/hooks';
+import { useState } from 'react';
 
 const supportedChainIds = [4];
 
@@ -19,13 +20,15 @@ function MyApp({ Component, pageProps }) {
     injected: {},
   };
 
+  const [isMember, setIsMember] = useState(false);
+
   return (
       <ChakraProvider theme={theme}>
         <ThirdwebWeb3Provider
           connectors={connectors}
           supportedChainIds={supportedChainIds}
         >
-          <Component {...pageProps} />
+          <Component {...pageProps} isMember={isMember} setIsMember={setIsMember}/>
         </ThirdwebWeb3Provider>
       </ChakraProvider>
   );
