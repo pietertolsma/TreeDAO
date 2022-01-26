@@ -1,29 +1,30 @@
 import { Button, Box, Center, Heading, Link, Text, Flex, Spinner, color } from '@chakra-ui/react'
 import Head from 'next/head'
-import Script from 'next/script'
 
-import sdk from "../scripts/1-initialize-sdk";
 import VisitorComponent from '../components/VisitorComponent';
-import HeaderComponent from '../components/HeaderComponent';
-import MemberView from '../components/MemberView';
+import Navigation from '../components/Navigation';
+import TokenListComponent from '../components/AddressListComponent';
 import { useStore } from '../lib/store';
 
-import $ from 'jquery';
 import React, { useEffect, useState } from 'react';
-
-
-const bundleDropModule = sdk.getBundleDropModule(
-  "0x156E3800528CC8604C77788f9d629D47113479d4",
-);
+import useWallet from '../hooks/useWallet';
+import { hasMembership } from '../lib/contract';
 
 export default function Home() {
 
-  const {isMember, address} = useStore((state) => state);
+  const { isMember, setIsMember } = useStore((state) => state);
+  const { address } = useWallet();
+
   const colors = ["#fea3aa", "#f8b88b", "#faf884", "#baed91", "#b2cefe", "#f2a2e8"]
   const [colorIndex, setColorIndex] = useState(0);
 
+  useEffect(() => {
+    if (!address) return;
+    hasMembership(address, (res) => setIsMember(res), (msg, err) => console.error(msg, err));
+  }, [address]);
+
   const memberView = (
-    <MemberView/>
+    <TokenListComponent/>
   )
 
   const visitorView = (
@@ -34,10 +35,6 @@ export default function Home() {
     <Flex direction="column">
       {isMember ? memberView : visitorView}
     </Flex>
-  )
-
-  const loading = (
-    <Spinner />
   )
 
   useEffect(() => {
@@ -67,11 +64,11 @@ export default function Home() {
       </Head>
 
       <main>
-        <Box style={backgroundStyle} backgroundColor={colors[colorIndex]}>
-        <HeaderComponent />
-        <Box h="100vh" maxWidth="1200px" m="0 auto" textAlign="center">
-          {connected}
-        </Box>
+        <Box height="100vh" style={backgroundStyle} backgroundColor={colors[colorIndex]}>
+          <Navigation />
+          <Box backgroundColor="white" minHeight="70vh" maxWidth="800px" m="0 auto" mt="10" textAlign="center">
+            {connected}
+          </Box>
         </Box> 
       </main>
 

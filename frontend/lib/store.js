@@ -7,8 +7,6 @@ let store;
 
 const initialState = {
     isMember: false,
-    provider : null,
-    address : null,
 }
 
 const zustandContext = createContext();
@@ -23,14 +21,7 @@ export const initializeStore = (preloadedState = {}) => {
         ...preloadedState,
         setIsMember: (isMember) => {
             set({isMember})
-        },
-        setProvider: (provider) => {
-            set({provider})
-        },
-        setAddress: (addr) => {
-            set({addr})
-        },
-
+        }
     }));
 }
 

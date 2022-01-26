@@ -6,80 +6,43 @@ import {
     Button,
     Stack,
     Collapse,
-    Icon,
     Link,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
     Heading,
     useColorModeValue,
-    useBreakpointValue,
     useDisclosure,
+    StackDivider,
   } from '@chakra-ui/react';
   import {
     HamburgerIcon,
     CloseIcon,
-    ChevronDownIcon,
-    ChevronRightIcon,
   } from '@chakra-ui/icons';
-import { useWeb3 } from '@3rdweb/hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from '../lib/store';
-import sdk from '../scripts/1-initialize-sdk';
+import useWallet from '../hooks/useWallet';
+import { getTokens } from '../lib/contract';
 
-const bundleDropModule = sdk.getBundleDropModule(
-  "0x156E3800528CC8604C77788f9d629D47113479d4",
-);
+export default function Navigation() {
 
-export default function HeaderComponent() {
-
-    const {isMember, setIsMember, provider, setAddress, setProvider} = useStore();
+    const {isMember} = useStore();
+    const [tokens, setTokens] = useState(0);
 
     const { isOpen, onToggle } = useDisclosure();
 
-    const { connectWallet, address, error, newProvider, disconnectWallet } = useWeb3();
-
-    const signer = provider ? provider.getSigner() : undefined;
+    const { connectWallet, address, disconnectWallet } = useWallet();
 
     useEffect(() => {
-      setAddress(address);
-    }, [])
-  
-    // useEffect(() => {
-    //   sdk.setProviderOrSigner(signer);
-  
-    // }, [signer]);
-
-    useEffect(() => {
-      setProvider(newProvider);
-    }, [newProvider]);
-
-    useEffect(() => {
-      console.log(address);
       if (!address) return;
-  
-      return bundleDropModule
-          .balanceOf(address, "0") // "0" = tokenId
-          .then((balance) => {
-            if (balance.gt(0)) {
-              setIsMember(true);
-              console.log(
-                `🌊 You are a member! Check it our on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address.toLowerCase()}/0`
-              );
-            } else {
-              console.log("Not a member");
-              setIsMember(false);
-            }
-          })
-          .catch((error) => {
-            setIsMember(false);
-            console.log("Failed to get NFT balance", error);
-          });
+
+      getTokens(address, (res) => setTokens(res), (msg, err) => console.error(msg, err));
     }, [address]);
 
     const connected = (
         <Button backgroundColor="green.100" onClick={() => disconnectWallet()} _hover={{bg: 'green.200'}}>
+            <Stack direction="row">
             <Text width="120px" isTruncated>{address}</Text>
+            <StackDivider />
+            <Text>Balance: {tokens}</Text>
+            </Stack>
         </Button>
     )
 
