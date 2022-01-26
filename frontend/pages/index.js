@@ -1,46 +1,36 @@
-import { Button, Box, Center, Heading, Link, Text, Flex } from '@chakra-ui/react'
+import { Button, Box, Center, Heading, Link, Text, Flex, Spinner } from '@chakra-ui/react'
 import Head from 'next/head'
-
-import { useWeb3 } from "@3rdweb/hooks";
-import { ThirdwebSDK } from "@3rdweb/sdk";
-import { useEffect, useState } from 'react';
 
 import sdk from "../scripts/1-initialize-sdk";
 import VisitorComponent from '../components/VisitorComponent';
-import LandingView from '../components/LandingView';
 import HeaderComponent from '../components/HeaderComponent';
 import MemberView from '../components/MemberView';
+import { useStore } from '../lib/store';
 
 const bundleDropModule = sdk.getBundleDropModule(
   "0x156E3800528CC8604C77788f9d629D47113479d4",
 );
 
-export default function Home({isMember, setIsMember}) {
+export default function Home() {
 
-  const { connectWallet, address, error, provider } = useWeb3();
-
-  const signer = provider ? provider.getSigner() : undefined;
-
-  useEffect(() => {
-    sdk.setProviderOrSigner(signer);
-  }, [signer]);
+  const {isMember, address} = useStore((state) => state);
 
   const memberView = (
-    <MemberView isMember={isMember}/>
+    <MemberView/>
   )
 
   const visitorView = (
-    <VisitorComponent address={address} provider={provider} setHasClaimedNFT={setIsMember}/>
-  )
-  
-  const connect = (
-    <LandingView connectWallet={connectWallet}/>
+    <VisitorComponent/>
   )
 
   const connected = (
     <Flex direction="column">
       {isMember ? memberView : visitorView}
     </Flex>
+  )
+
+  const loading = (
+    <Spinner />
   )
 
   return (
@@ -52,9 +42,9 @@ export default function Home({isMember, setIsMember}) {
       </Head>
 
       <main>
-        <HeaderComponent address={address} isMember={isMember} connectWallet={connectWallet}/>
+        <HeaderComponent />
         <Box h="100vh" maxWidth="1200px" m="0 auto" textAlign="center">
-          {address ? connected : connect}
+          {connected}
         </Box>
       </main>
 

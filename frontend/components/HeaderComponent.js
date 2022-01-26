@@ -22,13 +22,63 @@ import {
     ChevronDownIcon,
     ChevronRightIcon,
   } from '@chakra-ui/icons';
+import { useWeb3 } from '@3rdweb/hooks';
+import { useEffect } from 'react';
+import { useStore } from '../lib/store';
+import sdk from '../scripts/1-initialize-sdk';
 
-export default function HeaderComponent({ address, isMember, connectWallet }) {
+const bundleDropModule = sdk.getBundleDropModule(
+  "0x156E3800528CC8604C77788f9d629D47113479d4",
+);
+
+export default function HeaderComponent() {
+
+    const {isMember, setIsMember, provider, setAddress, setProvider} = useStore();
 
     const { isOpen, onToggle } = useDisclosure();
 
+    const { connectWallet, address, error, newProvider, disconnectWallet } = useWeb3();
+
+    const signer = provider ? provider.getSigner() : undefined;
+
+    useEffect(() => {
+      setAddress(address);
+    }, [])
+  
+    // useEffect(() => {
+    //   sdk.setProviderOrSigner(signer);
+  
+    // }, [signer]);
+
+    useEffect(() => {
+      setProvider(newProvider);
+    }, [newProvider]);
+
+    useEffect(() => {
+      console.log(address);
+      if (!address) return;
+  
+      return bundleDropModule
+          .balanceOf(address, "0") // "0" = tokenId
+          .then((balance) => {
+            if (balance.gt(0)) {
+              setIsMember(true);
+              console.log(
+                `🌊 You are a member! Check it our on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address.toLowerCase()}/0`
+              );
+            } else {
+              console.log("Not a member");
+              setIsMember(false);
+            }
+          })
+          .catch((error) => {
+            setIsMember(false);
+            console.log("Failed to get NFT balance", error);
+          });
+    }, [address]);
+
     const connected = (
-        <Button backgroundColor="green.100" _hover={{bg: 'green.200'}}>
+        <Button backgroundColor="green.100" onClick={() => disconnectWallet()} _hover={{bg: 'green.200'}}>
             <Text width="120px" isTruncated>{address}</Text>
         </Button>
     )
