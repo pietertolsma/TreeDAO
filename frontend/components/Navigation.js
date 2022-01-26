@@ -37,7 +37,7 @@ export default function Navigation() {
     }, [address]);
 
     const connected = (
-        <Button backgroundColor="green.100" onClick={() => disconnectWallet()} _hover={{bg: 'green.200'}}>
+        <Button backgroundColor="green.100" onClick={disconnectWallet} _hover={{bg: 'green.200'}}>
             <Stack direction="row">
             <Text width="120px" isTruncated>{address}</Text>
             <StackDivider />

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { getMemberAccounts, getTotalSupply } from "../lib/contract";
 
-export default function TokenListComponent() {
+export default function OwnerList() {
 
   const [memberAccounts, setMemberAccounts] = useState([]);
   const [totalSupply, setTotalSupply] = useState(1);

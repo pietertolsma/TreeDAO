@@ -1,9 +1,9 @@
-import { Button, Box, Center, Heading, Link, Text, Flex, Spinner, color } from '@chakra-ui/react'
+import { Button, Box, Center, Heading, Link, Text, Flex, Spinner, color, Icon, Stack } from '@chakra-ui/react'
 import Head from 'next/head'
 
 import VisitorComponent from '../components/VisitorComponent';
 import Navigation from '../components/Navigation';
-import TokenListComponent from '../components/AddressListComponent';
+import TokenListComponent from '../components/OwnerList';
 import { useStore } from '../lib/store';
 
 import React, { useEffect, useState } from 'react';
@@ -73,10 +73,13 @@ export default function Home() {
       </main>
 
       <footer>
-        <Center>
+        <Flex direction="column" justifyContent={"center"} align="center">
           <Text>This site was made for education purposes by Pieter Tolsma</Text>
-          <Link href="https://github.com/pietertolsma/TreeDAO">Github</Link>
-        </Center>
+          <Stack direction="row">
+            <Link href="https://github.com/pietertolsma/TreeDAO">Github</Link>
+            <Link href="https://twitter.com/0xgamut">Twitter</Link>
+          </Stack>
+        </Flex>
       </footer>
     </div>
   )
