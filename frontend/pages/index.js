@@ -31,12 +31,12 @@ export default function Home() {
       <Box minHeight="100px">
         <Heading m="5">TreeDAO</Heading>
       </Box>
-      <Flex>
-        <Box width="50%">
+      <Flex direction={{base: "column", lg: "row"}} justifyContent="space-evenly" >
+        <Box>
           <Heading fontSize="3xl">Owners</Heading>
           <OwnerList/>
         </Box>
-        <Box width="50%">
+        <Box>
           <Heading fontSize="3xl">Proposals</Heading>
           <ProposalList width="50%" />
         </Box>

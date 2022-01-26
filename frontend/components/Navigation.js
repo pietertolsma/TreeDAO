@@ -112,13 +112,14 @@ export default function Navigation() {
           </Flex>
         </Flex>
         <Stack direction="row" justifyContent="center" align="center">
-          <Switch size="lg" isChecked={disco} onChange={() => {setDisco(!disco)}}/>
+          <Switch display={{base : "none", md: "block"}}size="lg" isChecked={disco} onChange={() => {setDisco(!disco)}}/>
           {address ? connected : disconnected}
         </Stack>
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
         <Link href="#">Home</Link>
+        <Switch size="lg" isChecked={disco} onChange={() => {setDisco(!disco)}}/>
       </Collapse>
         </Box>
     )
