@@ -3,7 +3,7 @@ import Head from 'next/head'
 
 import VisitorComponent from '../components/VisitorComponent';
 import Navigation from '../components/Navigation';
-import TokenListComponent from '../components/OwnerList';
+import OwnerList from '../components/OwnerList';
 import { useStore } from '../lib/store';
 
 import React, { useEffect, useState } from 'react';
@@ -24,7 +24,7 @@ export default function Home() {
   }, [address]);
 
   const memberView = (
-    <TokenListComponent/>
+    <OwnerList/>
   )
 
   const visitorView = (

@@ -1,6 +1,8 @@
 import sdk from "../scripts/1-initialize-sdk";
 
 import { ethers } from "ethers";
+import { useWeb3React } from "@web3-react/core";
+import { ThirdwebSDK } from "@3rdweb/sdk";
 
 const tokenModule = sdk.getTokenModule(
     "0x5fE4cf831d7E4A23aF72BeBC12622CCdcb32f8DD"
@@ -9,6 +11,22 @@ const tokenModule = sdk.getTokenModule(
 const bundleDropModule = sdk.getBundleDropModule(
     "0x156E3800528CC8604C77788f9d629D47113479d4",
   );
+
+export const mintMembershipNFT = (account, library, callback, err) => {
+
+  const signer = library.getSigner(account);
+  const module = new ThirdwebSDK(signer).getBundleDropModule(
+    "0x156E3800528CC8604C77788f9d629D47113479d4");
+
+  module
+      .claim("0", 1)
+      .then(() => {
+        callback(true);
+      })
+      .catch((error) => {
+        err("Failed to claim :(", error);
+      });
+}
 
 export const getMemberAccounts = (callback, err) => {
     getAllMembers((members) => {
