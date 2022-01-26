@@ -90,8 +90,6 @@ export default function HeaderComponent({ address, isMember, connectWallet }) {
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
           <Heading
             fontSize="1.2em"
-            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-            fontFamily={'heading'}
             color={useColorModeValue('gray.800', 'white')}>
             TreeDAO
           </Heading>
