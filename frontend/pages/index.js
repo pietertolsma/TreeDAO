@@ -11,6 +11,7 @@ import useWallet from '../hooks/useWallet';
 import { hasMembership } from '../lib/contract';
 import WalletButton from '../components/WalletButton';
 import ProposalList from '../components/ProposalList';
+import VoteButton from '../components/VoteButton';
 
 export default function Home() {
 
@@ -28,17 +29,18 @@ export default function Home() {
 
   const memberView = (
     <Box>
-      <Box minHeight="100px">
+      <Box minHeight="20px">
         <Heading m="5">TreeDAO</Heading>
       </Box>
-      <Flex direction={{base: "column", lg: "row"}} justifyContent="space-evenly" >
-        <Box>
+      <Flex direction={{base: "column", lg: "row"}} justifyContent="space-evenly" m="10" >
+        <Box width={{base: "100%", lg: "50%"}} >
           <Heading fontSize="3xl">Owners</Heading>
           <OwnerList/>
         </Box>
-        <Box>
+        <Box width={{base: "100%", lg: "50%"}}>
           <Heading fontSize="3xl">Proposals</Heading>
-          <ProposalList width="50%" />
+          <ProposalList />
+          <VoteButton width="50%" m="0 auto"/>
         </Box>
       </Flex>
     </Box>

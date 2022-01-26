@@ -1,4 +1,4 @@
-import { Heading, Text, Flex, Stack, SimpleGrid, Divider, RangeSlider, RangeSliderTrack, RangeSliderFilledTrack } from '@chakra-ui/react'
+import { Heading, Text, Flex, Stack, SimpleGrid, Divider, RangeSlider, RangeSliderTrack, RangeSliderFilledTrack, Skeleton } from '@chakra-ui/react'
 import { useEffect, useMemo, useState } from "react";
 import useWallet from '../hooks/useWallet';
 
@@ -32,6 +32,14 @@ export default function OwnerList() {
     </SimpleGrid>)
   });
 
+  const memberLoadingView = (
+    <Flex m="1" direction="column" maxWidth="500px">
+      <Skeleton m="2" height="50px" width="480px"/>
+      <Skeleton m="2" height="50px" width="470px"/>
+      <Skeleton m="2" height="50px" width="460px"/>
+    </Flex>
+  )
+
   return (
     <Flex direction="column" borderWidth="1px" maxWidth="500px" margin="20px auto" borderRadius="lg">
         <SimpleGrid columns={2} m="1" spacing="5" direction="row">
@@ -40,7 +48,7 @@ export default function OwnerList() {
         </SimpleGrid>
         <Divider />
         <Flex align="center" direction="column">
-          {memberListView}
+          {memberListView.length > 0 ? memberListView : memberLoadingView}
         </Flex>
     </Flex>
   )

@@ -9,9 +9,15 @@ export default function ProposalList(props) {
         return (<Proposal proposal={proposal} key={index} />);
     });
 
+    const empty = (
+        <Box>
+            <Text>There is currently nothing to vote on.</Text>
+        </Box>
+    )
+
     return (
         <Box margin="20px auto" maxWidth="500px">
-            {proposalComponents}
+            {proposalComponents.length > 0 ? proposalComponents : empty}
         </Box>
     )
 }
