@@ -7,6 +7,7 @@ let store;
 
 const initialState = {
     isMember: false,
+    tokens: 0,
     disco: false,
 }
 
@@ -23,6 +24,7 @@ export const initializeStore = (preloadedState = {}) => {
         setIsMember: (isMember) => {
             set({isMember})
         },
+        setTokens: (tokens) => {set({tokens})},
         setDisco: (disco) => {set({disco})}
     }));
 }

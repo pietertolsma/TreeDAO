@@ -13,7 +13,7 @@ import WalletButton from '../components/WalletButton';
 
 export default function Home() {
 
-  const { isMember, setIsMember, disco} = useStore((state) => state);
+  const { isMember, setIsMember, disco, tokens} = useStore((state) => state);
   const { address } = useWallet();
 
   const defaultBackground = "gray.100";
@@ -26,20 +26,23 @@ export default function Home() {
   }, [address]);
 
   const memberView = (
-    <OwnerList/>
+    <Box>
+      <Text>You currently own {tokens} 🌳</Text>
+      <OwnerList/>
+    </Box>
   )
 
   const visitorView = (
     <Box m="10">
-      <Heading>Welcome to TreeDAO</Heading>
-      <Text m="3">TreeDAO was created to demonstrate why DAOs are awesome. <br /> By clicking the button below, you can mint the NFTree and become a member of this DAO instantly.</Text>
+      <Heading>🌳 Welcome to TreeDAO 🌳</Heading>
+      <Text m="3" fontSize="xl">TreeDAO was created to demonstrate why DAOs are awesome. <br /> By clicking the button below, you can mint an <Text color="pink.400" fontWeight="bold" style={{display:"inline"}}>NFTree</Text> and become a member of this DAO instantly.</Text>
       {address ? (<EnrollButton maxWidth="500px" m="0 auto"/>) : (<WalletButton maxWidth="500px" m="0 auto"/>)}
     </Box>
   )
 
   const connected = (
     <Flex direction="column">
-      {isMember ? memberView : visitorView}
+      {address && isMember ? memberView : visitorView}
     </Flex>
   )
 

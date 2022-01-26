@@ -21,11 +21,11 @@ import { useEffect, useState } from 'react';
 import { useStore } from '../lib/store';
 import useWallet from '../hooks/useWallet';
 import { getTokens } from '../lib/contract';
+import { shortenAddress } from '../lib/util';
 
 export default function Navigation() {
 
-    const {isMember, setDisco, disco} = useStore();
-    const [tokens, setTokens] = useState(0);
+    const {isMember, setDisco, disco, tokens, setTokens} = useStore();
 
     const { isOpen, onToggle } = useDisclosure();
 
@@ -38,11 +38,11 @@ export default function Navigation() {
     }, [address]);
 
     const connected = (
-        <Button backgroundColor="green.100" onClick={disconnectWallet} _hover={{bg: 'green.200'}}>
+        <Button backgroundColor="green.100" onClick={() => disconnectWallet()} _hover={{bg: 'green.200'}}>
             <Stack direction="row">
-            <Text width="120px" isTruncated>{address}</Text>
+            <Text>{shortenAddress(address)}</Text>
             <StackDivider />
-            <Text>Balance: {tokens}</Text>
+            <Text>{tokens} 🌳</Text>
             </Stack>
         </Button>
     )
@@ -66,7 +66,6 @@ export default function Navigation() {
     const memberNav = (
         <Stack direction="row">
             <Link href="#">Home</Link>
-            <Link href="/lounge">Lounge</Link>
         </Stack>
     )
 
@@ -105,7 +104,7 @@ export default function Navigation() {
           <Heading
             fontSize="1.2em"
             color={useColorModeValue('gray.800', 'white')}>
-            TreeDAO
+            🌳 TreeDAO
           </Heading>
 
           <Flex align="center" display={{ base: 'none', md: 'flex' }} ml={10}>
