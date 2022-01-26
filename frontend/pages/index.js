@@ -10,10 +10,11 @@ import React, { useEffect, useState } from 'react';
 import useWallet from '../hooks/useWallet';
 import { hasMembership } from '../lib/contract';
 import WalletButton from '../components/WalletButton';
+import ProposalList from '../components/ProposalList';
 
 export default function Home() {
 
-  const { isMember, setIsMember, disco, tokens} = useStore((state) => state);
+  const { isMember, setIsMember, disco} = useStore((state) => state);
   const { address } = useWallet();
 
   const defaultBackground = "gray.100";
@@ -27,15 +28,26 @@ export default function Home() {
 
   const memberView = (
     <Box>
-      <Text>You currently own {tokens} 🌳</Text>
-      <OwnerList/>
+      <Box minHeight="100px">
+        <Heading m="5">TreeDAO</Heading>
+      </Box>
+      <Flex>
+        <Box width="50%">
+          <Heading fontSize="3xl">Owners</Heading>
+          <OwnerList/>
+        </Box>
+        <Box width="50%">
+          <Heading fontSize="3xl">Proposals</Heading>
+          <ProposalList width="50%" />
+        </Box>
+      </Flex>
     </Box>
   )
 
   const visitorView = (
     <Box m="10">
       <Heading>🌳 Welcome to TreeDAO 🌳</Heading>
-      <Text m="3" fontSize="xl">TreeDAO was created to demonstrate why DAOs are awesome. <br /> By clicking the button below, you can mint an <Text color="pink.400" fontWeight="bold" style={{display:"inline"}}>NFTree</Text> and become a member of this DAO instantly.</Text>
+      <Text m="3" fontSize="xl">TreeDAO was created to demonstrate why DAOs are awesome. <br /> By clicking the button below, you can mint an NFTree and become a member of this DAO instantly.</Text>
       {address ? (<EnrollButton maxWidth="500px" m="0 auto"/>) : (<WalletButton maxWidth="500px" m="0 auto"/>)}
     </Box>
   )
@@ -61,9 +73,9 @@ export default function Home() {
 
 
   const backgroundStyle = {
-    transition: "all 1s ease",
-    WebkitTransition: "all 1s ease",
-    MozTransition: "all 1s ease",
+    transition: "background-color 1s ease",
+    WebkitTransition: "background-color 1s ease",
+    MozTransition: "background-color 1s ease",
   }
 
   return (
