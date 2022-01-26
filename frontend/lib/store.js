@@ -7,6 +7,7 @@ let store;
 
 const initialState = {
     isMember: false,
+    disco: false,
 }
 
 const zustandContext = createContext();
@@ -21,7 +22,8 @@ export const initializeStore = (preloadedState = {}) => {
         ...preloadedState,
         setIsMember: (isMember) => {
             set({isMember})
-        }
+        },
+        setDisco: (disco) => {set({disco})}
     }));
 }
 

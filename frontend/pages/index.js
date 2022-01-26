@@ -1,7 +1,7 @@
 import { Button, Box, Center, Heading, Link, Text, Flex, Spinner, color, Icon, Stack } from '@chakra-ui/react'
 import Head from 'next/head'
 
-import VisitorComponent from '../components/VisitorComponent';
+import EnrollButton from '../components/EnrollButton';
 import Navigation from '../components/Navigation';
 import OwnerList from '../components/OwnerList';
 import { useStore } from '../lib/store';
@@ -9,12 +9,14 @@ import { useStore } from '../lib/store';
 import React, { useEffect, useState } from 'react';
 import useWallet from '../hooks/useWallet';
 import { hasMembership } from '../lib/contract';
+import WalletButton from '../components/WalletButton';
 
 export default function Home() {
 
-  const { isMember, setIsMember } = useStore((state) => state);
+  const { isMember, setIsMember, disco} = useStore((state) => state);
   const { address } = useWallet();
 
+  const defaultBackground = "gray.100";
   const colors = ["#fea3aa", "#f8b88b", "#faf884", "#baed91", "#b2cefe", "#f2a2e8"]
   const [colorIndex, setColorIndex] = useState(0);
 
@@ -28,7 +30,11 @@ export default function Home() {
   )
 
   const visitorView = (
-    <VisitorComponent/>
+    <Box m="10">
+      <Heading>Welcome to TreeDAO</Heading>
+      <Text m="3">TreeDAO was created to demonstrate why DAOs are awesome. <br /> By clicking the button below, you can mint the NFTree and become a member of this DAO instantly.</Text>
+      {address ? (<EnrollButton maxWidth="500px" m="0 auto"/>) : (<WalletButton maxWidth="500px" m="0 auto"/>)}
+    </Box>
   )
 
   const connected = (
@@ -38,7 +44,9 @@ export default function Home() {
   )
 
   useEffect(() => {
-    const interval = setTimeout(() => {
+    if (!disco) return;
+
+    setTimeout(() => {
       if (colorIndex >= colors.length - 1) {
         setColorIndex((_) => 0);
       } else {
@@ -46,7 +54,7 @@ export default function Home() {
       }
     }, 1300);
     // return () => clearInterval(interval);
-  }, [colorIndex])
+  }, [colorIndex, disco])
 
 
   const backgroundStyle = {
@@ -64,9 +72,9 @@ export default function Home() {
       </Head>
 
       <main>
-        <Box height="100vh" style={backgroundStyle} backgroundColor={colors[colorIndex]}>
+        <Box height="100vh" style={backgroundStyle} backgroundColor={disco ? colors[colorIndex] : defaultBackground}>
           <Navigation />
-          <Box backgroundColor="white" minHeight="70vh" maxWidth="800px" m="0 auto" mt="10" textAlign="center">
+          <Box backgroundColor="white" maxWidth="1200px" m="0px auto" mt="10" textAlign="center">
             {connected}
           </Box>
         </Box> 

@@ -1,11 +1,11 @@
-import { Button, Box, Center, Heading, Link, Text, Flex } from '@chakra-ui/react'
+import { Button, Text, Flex } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core';
 
 import {  useState } from 'react';
 
 import { mintMembershipNFT } from '../lib/contract';
 
-export default function VisitorComponent() {
+export default function EnrollButton(props) {
   const [isClaiming, setIsClaiming] = useState(false);
 
   const { account, library } = useWeb3React();
@@ -19,10 +19,9 @@ export default function VisitorComponent() {
   }
 
   return (
-    <Flex direction="column">
-      <Text>You are not a member yet.</Text>
-      <Button disabled={isClaiming} onClick={() => mintNft()}>
-        {isClaiming ? "Minting..." : "Click here to mint your free membership!"}
+    <Flex {...props} direction="column">
+      <Button size="lg" colorScheme="pink" disabled={isClaiming || !account} onClick={() => mintNft()}>
+        {isClaiming ? "Minting..." : !account ? "Connect your wallet first" : "Join the DAO!"}
       </Button>
     </Flex>
   )

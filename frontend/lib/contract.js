@@ -31,7 +31,7 @@ export const mintMembershipNFT = (account, library, callback, err) => {
 export const getMemberAccounts = (callback, err) => {
     getAllMembers((members) => {
         getAllHolderBalances((balances) => {
-            callback(joinMembersWithBalances(members, balances));
+            callback(joinMembersWithBalances(members, balances).sort((left, right) => left.tokenAmount < right.tokenAmount));
         }, err);
     }, err);
 }

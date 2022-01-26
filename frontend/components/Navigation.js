@@ -11,6 +11,7 @@ import {
     useColorModeValue,
     useDisclosure,
     StackDivider,
+    Switch,
   } from '@chakra-ui/react';
   import {
     HamburgerIcon,
@@ -23,7 +24,7 @@ import { getTokens } from '../lib/contract';
 
 export default function Navigation() {
 
-    const {isMember} = useStore();
+    const {isMember, setDisco, disco} = useStore();
     const [tokens, setTokens] = useState(0);
 
     const { isOpen, onToggle } = useDisclosure();
@@ -111,8 +112,10 @@ export default function Navigation() {
             {isMember ? memberNav : nonMemberNav}
           </Flex>
         </Flex>
-
-        {address ? connected : disconnected}
+        <Stack direction="row" justifyContent="center" align="center">
+          <Switch size="lg" isChecked={disco} onChange={() => {setDisco(!disco)}}/>
+          {address ? connected : disconnected}
+        </Stack>
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
