@@ -18,13 +18,16 @@ export const getAllProposals = (callback, err) => {
   voteModule.getAll()
     .then((results) => {
       let props = [];
-      console.log(results);
       for (const prop of results) {
+        let executions = []
 
-        let mintDetails = {}
-        if (prop.executions[0].transactionData != "0x") {
-          mintDetails = tokenModule.contract.interface.decodeFunctionData("mint", prop.executions[0].transactionData);
-          console.log("Mint details: " + mintDetails);
+        for (const exec of prop.executions) {
+          if (exec.transactionData != "0x") {
+            executions.push({
+              eth: exec.nativeTokenValue.toString(),
+              sapling: parseFloat(String(tokenModule.contract.interface.decodeFunctionData("mint", prop.executions[0].transactionData)).split(",")[1])
+            });
+          }
         }
 
         props.push({
@@ -32,14 +35,12 @@ export const getAllProposals = (callback, err) => {
           id: prop.proposalId,
           proposer: prop.proposer,
           votes: {
-            "Against" : prop.votes[0].count,
-            "For" : prop.votes[1].count,
-            "Abstain" : prop.votes[2].count
+            "Against" : prop.votes[0].count.toString(),
+            "For" : prop.votes[1].count.toString(),
+            "Abstain" : prop.votes[2].count.toString()
           },
           state: prop.state,
-          execution: {
-            
-          }
+          executions,
         })
       }
       callback(props)
@@ -57,7 +58,7 @@ export const submitProposal = (account, library, {description, to_address, eth_a
       nativeTokenValue : eth_amount,
       transactionData: tokenModule.contract.interface.encodeFunctionData("mint", [
         module.address,
-        sapling_amount
+        10000
       ]),
     },
   ]

@@ -11,6 +11,7 @@ export default function ProposalList(props) {
     useEffect(() => {
         getAllProposals((res) => {
             setProposals(res);
+            console.log(res);
         }, (msg, err) => console.error(msg, err));
     }, [])
 
