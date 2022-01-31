@@ -90,22 +90,11 @@ export default function Home() {
 
       <main>
         <Box height="100vh" style={backgroundStyle} backgroundColor={disco ? colors[colorIndex] : defaultBackground}>
-          <Navigation />
-          <Box backgroundColor="white" maxWidth="1200px" m="0px auto" mt="10" textAlign="center">
+          <Box backgroundColor="white" maxWidth="1200px" m="0px auto" textAlign="center">
             {connected}
           </Box>
         </Box> 
       </main>
-
-      <footer>
-        <Flex direction="column" justifyContent={"center"} align="center">
-          <Text>This site was made for education purposes by Pieter Tolsma</Text>
-          <Stack direction="row">
-            <Link href="https://github.com/pietertolsma/TreeDAO">Github</Link>
-            <Link href="https://twitter.com/0xgamut">Twitter</Link>
-          </Stack>
-        </Flex>
-      </footer>
     </div>
   )
 }

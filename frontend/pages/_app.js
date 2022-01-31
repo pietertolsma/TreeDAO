@@ -2,6 +2,8 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import {ThirdwebWeb3Provider} from '@3rdweb/hooks';
 import { useState } from 'react';
 import { Provider, useCreateStore } from '../lib/store';
+import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 
 const supportedChainIds = [4];
 
@@ -30,7 +32,9 @@ function MyApp({ Component, pageProps }) {
             connectors={connectors}
             supportedChainIds={supportedChainIds}
           >
+            <Navigation />
             <Component {...pageProps} />
+            <Footer />
           </ThirdwebWeb3Provider>
         </ChakraProvider>
       </Provider>

@@ -65,14 +65,16 @@ export default function Navigation() {
 
     const memberNav = (
         <Stack direction="row">
-            <Link href="#">Home</Link>
+            <Link href="/">Home</Link>
+            <Link href="/propose">Propose</Link>
         </Stack>
     )
 
     const nonMemberNav = (
-        <Flex>
-            <Link href="#">Home</Link>
-        </Flex>
+      <Stack direction="row">
+        <Link href="/">Home</Link>
+        <Link href="/propose">Propose</Link>
+      </Stack>
     )
 
     return (
