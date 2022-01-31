@@ -12,6 +12,65 @@ const bundleDropModule = sdk.getBundleDropModule(
     "0x156E3800528CC8604C77788f9d629D47113479d4",
   );
 
+const voteModule = sdk.getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
+
+export const getAllProposals = (callback, err) => {
+  voteModule.getAll()
+    .then((results) => {
+      let props = [];
+      console.log(results);
+      for (const prop of results) {
+
+        let mintDetails = {}
+        if (prop.executions[0].transactionData != "0x") {
+          mintDetails = tokenModule.contract.interface.decodeFunctionData("mint", prop.executions[0].transactionData);
+          console.log("Mint details: " + mintDetails);
+        }
+
+        props.push({
+          description: prop.description,
+          id: prop.proposalId,
+          proposer: prop.proposer,
+          votes: {
+            "Against" : prop.votes[0].count,
+            "For" : prop.votes[1].count,
+            "Abstain" : prop.votes[2].count
+          },
+          state: prop.state,
+          execution: {
+            
+          }
+        })
+      }
+      callback(props)
+    })
+    .catch((error) => err(error));
+}
+
+export const submitProposal = (account, library, {description, to_address, eth_amount, sapling_amount}, callback, err) => {
+  const signer = library.getSigner(account);
+  const module = new ThirdwebSDK(signer).getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
+
+  const executions = [
+    {
+      toAddress : to_address,
+      nativeTokenValue : eth_amount,
+      transactionData: tokenModule.contract.interface.encodeFunctionData("mint", [
+        module.address,
+        sapling_amount
+      ]),
+    },
+  ]
+
+  module.propose(description, executions)
+    .then(() => {
+      callback(true);
+    })
+    .catch((error) => {
+      err("Failed to propose", error);
+    });
+};
+
 export const mintMembershipNFT = (account, library, callback, err) => {
 
   const signer = library.getSigner(account);

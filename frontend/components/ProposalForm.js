@@ -1,9 +1,26 @@
 import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Textarea } from "@chakra-ui/react";
+import { useWeb3React } from "@web3-react/core";
 import { errors } from "ethers";
 import { Field, Form, Formik } from 'formik';
+import { useState } from "react";
+import { submitProposal } from "../lib/contract";
 
 
 function ProposalForm(props) {
+
+    const [ isProposing, setProposing ] = useState(false);
+    const { account, library } = useWeb3React();
+
+    function submit(values, actions) {
+        setProposing(true);
+        submitProposal(account, library, values, (res) => {
+            console.log("Succesfully proposed!");
+            setProposing(false);
+        }, (msg, err) => {
+            console.error(msg, err)
+            setProposing(false);
+        });
+    }
 
     function validate(val) {
         const errors = {};
@@ -20,10 +37,10 @@ function ProposalForm(props) {
     }
 
     return (
-        <Box {...props} >
-            <Formik initialValues={{ description: "", to_address: "", eth_amount: 0}}
+        <Box {...props}  borderWidth="1px" p="3" borderRadius="lg">
+            <Formik initialValues={{ description: "", to_address: "", eth_amount: 0, sapling_amount: 0}}
                     onSubmit={(values, actions) => {
-                        console.log(values)
+                        submit(values)
                     }} validate={validate} >
                 {({errors}) => (
                     <Form>
@@ -50,8 +67,8 @@ function ProposalForm(props) {
                         <Flex mt="5">
                             <Field name='eth_amount'>
                                 {({field, form}) => (
-                                        <FormControl ml="2" isInvalid={errors.eth_amount && form.touched.eth_amount}>
-                                            <FormLabel htmlFor='eth_amount'>ETH to send</FormLabel>
+                                        <FormControl mr="2" isInvalid={errors.eth_amount && form.touched.eth_amount}>
+                                            <FormLabel htmlFor='eth_amount'>ETH to transfer</FormLabel>
                                             <NumberInput defaultValue={0} id="eth_amount" precision={8} step={0.0001}>
                                                 <NumberInputField />
                                                 <NumberInputStepper>
@@ -65,21 +82,21 @@ function ProposalForm(props) {
                             </Field>
                             <Field name='sapling_amount'>
                                 {({field, form}) => (
-                                    <FormControl ml="2" isInvalid={errors.eth_amount && form.touched.eth_amount}>
-                                        <FormLabel htmlFor='eth_amount'>SAPLING to mint</FormLabel>
-                                        <NumberInput defaultValue={0} id="eth_amount" precision={2} step={1}>
+                                    <FormControl ml="2" isInvalid={errors.sapling_amount && form.touched.sapling_amount}>
+                                        <FormLabel htmlFor='sapling_amount'>🌳 to Mint</FormLabel>
+                                        <NumberInput defaultValue={0} id="sapling_amount" precision={2} step={1}>
                                             <NumberInputField />
                                             <NumberInputStepper>
                                                 <NumberIncrementStepper />
                                                 <NumberDecrementStepper />
                                             </NumberInputStepper>
                                         </NumberInput>
-                                        <FormErrorMessage>{errors.eth_amount}</FormErrorMessage>
+                                        <FormErrorMessage>{errors.sapling_amount}</FormErrorMessage>
                                     </FormControl>
                                 )}
                             </Field>
                         </Flex>
-                        <Button type="submit" w="100%" colorScheme='pink' mt="5">Submit</Button>
+                        <Button disabled={isProposing} type="submit" w="100%" colorScheme='pink' mt="5">Submit Proposal</Button>
                     </Form>
                 )}
             </Formik>

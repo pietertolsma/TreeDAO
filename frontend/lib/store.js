@@ -32,9 +32,9 @@ export const initializeStore = (preloadedState = {}) => {
 export function useCreateStore(initialState) {
 
     // for SSR always use a new store
-    if (typeof window === 'undefined') {
-        return () => initializeStore(initializeStore);
-    }
+    // if (typeof window === 'undefined') {
+    //     return () => initializeStore(initializeStore);
+    // }
 
     // Check if store already exists
     store = store ?? initializeStore(initialState);
