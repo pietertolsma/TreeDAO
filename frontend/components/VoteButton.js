@@ -12,7 +12,6 @@ export default function VoteButton(props) {
         <Button
             size="lg" colorScheme="pink"
             disabled={tokens == 0}
-            onClick={() => connectWallet("injected")}
             >
             {tokens > 0 ? "Vote" : "No Voting Power"}
         </Button>

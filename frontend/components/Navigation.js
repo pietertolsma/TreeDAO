@@ -35,7 +35,7 @@ export default function Navigation() {
       if (!address) return;
 
       getTokens(address, (res) => setTokens(res), (msg, err) => console.error(msg, err));
-    }, [address]);
+    }, [address, setTokens]);
 
     const connected = (
         <Button backgroundColor="green.100" onClick={() => disconnectWallet()} _hover={{bg: 'green.200'}}>

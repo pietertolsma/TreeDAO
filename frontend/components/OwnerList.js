@@ -14,17 +14,17 @@ export default function OwnerList() {
   const wallet = useWallet();
 
   useEffect(() => {
-    getTotalSupply((res) => setTotalSupply(res), (msg, err) => console.error(msg, err));
+    getTotalSupply((res) => setTotalSupply(parseInt(res)), (msg, err) => console.error(msg, err));
     getMemberAccounts((res) => setMemberAccounts(res), (msg, err) => console.error(msg, err));
-  }, []);
+  }, [setTotalSupply, setMemberAccounts]);
 
 
   const memberListView = memberAccounts.map(({address, tokenAmount}, index) => {
     return (<SimpleGrid columns={2} spacing="5" m="1" direction="row" key={index} width="100%" backgroundColor={address == wallet.address ? "gray.200" : "white"}>
       <Flex justifyContent="right" align="center" height="50px">{shortenAddress(address)}</Flex>
       <Flex height="50px" direction="column" m="0 20px">
-        <Text m="1" textAlign={"left"}>{tokenAmount + " 🌳 (" + Math.floor(1000 * (tokenAmount / totalSupply)) / 10 + "%)"}</Text>
-        <RangeSlider defaultValue={[0, Math.floor(100 * (tokenAmount / totalSupply))]}>
+        <Text m="1" textAlign={"left"} fontSize="sm">{tokenAmount + " 🌳 (" + Math.floor(1000 * (tokenAmount / totalSupply)) / 10 + "%)"}</Text>
+        <RangeSlider defaultValue={[0, Math.floor(100 * (parseInt(tokenAmount) / totalSupply))]}>
           <RangeSliderTrack>
             <RangeSliderFilledTrack />
           </RangeSliderTrack>

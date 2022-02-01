@@ -47,10 +47,9 @@ function VoteCard({label, ...props}) {
   }
   
 
-export default function Proposal({proposal}) {
+export default function Proposal({changeVote, proposal}) {
 
     const options = ['For', 'Against', 'Abstain'];
-    const [active, setActive] = useState("Abstain");
     const [hasVoted, setHasVoted] = useState(false);
     const { account } = useWeb3React();
 
@@ -58,12 +57,11 @@ export default function Proposal({proposal}) {
       getHasVoted(proposal.id, account, 
         (res) => setHasVoted(res),
         (msg, err) => console.error(msg, err));
-    }, [])
+    }, [proposal.id, account])
 
     const { getRootProps, getRadioProps } = useRadioGroup({
         name: 'vote',
         defaultValue: 'none',
-        onChange: (val) => {console.log(val)},
       });
 
     const group = getRootProps();
@@ -86,7 +84,7 @@ export default function Proposal({proposal}) {
         {options.map((val) => {
             const radio = getRadioProps({val});
             return (
-                <VoteCard key={val} label={val} {...radio} onChange={() => setActive(val)} checked={val==active}>{val}</VoteCard>
+                <VoteCard key={val} label={val} {...radio} onChange={() => changeVote(val)} checked={val==proposal.currentVote}>{val}</VoteCard>
             )
         })}
      </HStack>
@@ -103,7 +101,7 @@ export default function Proposal({proposal}) {
               {proposal.executions.length > 0 ? executions : noExecutions}
             </Flex>
             {hasVoted ? alreadyVoted : voteButtons}
-            <VoteBar votes={proposal.votes} currentVote={hasVoted ? "" : active}/>
+            <VoteBar votes={proposal.votes} currentVote={hasVoted ? "" : proposal.currentVote}/>
         </Box>
     )
 }

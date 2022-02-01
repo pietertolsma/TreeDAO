@@ -2,7 +2,7 @@ import sdk from "../scripts/1-initialize-sdk";
 
 import { ethers } from "ethers";
 import { useWeb3React } from "@web3-react/core";
-import { ThirdwebSDK } from "@3rdweb/sdk";
+import { ThirdwebSDK, VoteType } from "@3rdweb/sdk";
 
 const tokenModule = sdk.getTokenModule(
     "0x5fE4cf831d7E4A23aF72BeBC12622CCdcb32f8DD"
@@ -13,6 +13,23 @@ const bundleDropModule = sdk.getBundleDropModule(
   );
 
 const voteModule = sdk.getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
+
+export const submitVotes = (account, library, votes) => {
+  const signer = library.getSigner(account);
+  const module = new ThirdwebSDK(signer).getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
+
+  const voteMap = {'For' : VoteType.For, 'Against' : VoteType.Against, 'Abstain' : VoteType.Abstain};
+
+  return new Promise((success, reject) => {
+    for (const vote of votes) {
+      if (vote.currentVote != 'Inactive') {
+        module.vote(vote.id, voteMap[vote.currentVote]);
+      }
+    }
+
+    success();
+  })
+}
 
 export const getHasVoted = (proposalId, account, callback, err) => {
   voteModule.hasVoted(proposalId, account)
@@ -39,6 +56,7 @@ export const getAllProposals = (callback, err) => {
         props.push({
           description: prop.description,
           id: prop.proposalId,
+          currentVote: 'Inactive',
           proposer: prop.proposer,
           votes: {
             "Against" : parseInt(ethers.utils.formatEther(prop.votes[0].count)),
@@ -97,7 +115,7 @@ export const mintMembershipNFT = (account, library, callback, err) => {
 export const getMemberAccounts = (callback, err) => {
     getAllMembers((members) => {
         getAllHolderBalances((balances) => {
-            callback(joinMembersWithBalances(members, balances).sort((left, right) => left.tokenAmount < right.tokenAmount));
+            callback(joinMembersWithBalances(members, balances).sort((left, right) => parseInt(left.tokenAmount) < parseInt(right.tokenAmount)));
         }, err);
     }, err);
 }

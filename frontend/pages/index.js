@@ -6,7 +6,7 @@ import Navigation from '../components/Navigation';
 import OwnerList from '../components/OwnerList';
 import { useStore } from '../lib/store';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import useWallet from '../hooks/useWallet';
 import { hasMembership } from '../lib/contract';
 import WalletButton from '../components/WalletButton';
@@ -25,7 +25,7 @@ export default function Home() {
   useEffect(() => {
     if (!address) return;
     hasMembership(address, (res) => setIsMember(res), (msg, err) => console.error(msg, err));
-  }, [address]);
+  }, [address, setIsMember]);
 
   const memberView = (
     <Box>
@@ -40,7 +40,6 @@ export default function Home() {
         <Box width={{base: "100%", lg: "50%"}}>
           <Heading fontSize="3xl">Proposals</Heading>
           <ProposalList />
-          <VoteButton width="50%" m="0 auto"/>
         </Box>
       </Flex>
     </Box>
@@ -71,7 +70,7 @@ export default function Home() {
       }
     }, 1300);
     // return () => clearInterval(interval);
-  }, [colorIndex, disco])
+  }, [colorIndex, disco, colors.length])
 
 
   const backgroundStyle = {
