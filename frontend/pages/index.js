@@ -89,7 +89,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <Box height="100vh" pt="10" style={backgroundStyle} backgroundColor={disco ? colors[colorIndex] : defaultBackground}>
+        <Box pt="10" style={backgroundStyle} backgroundColor={disco ? colors[colorIndex] : defaultBackground}>
           <Box backgroundColor="white" maxWidth="1200px" m="0px auto" textAlign="center">
             {connected}
           </Box>

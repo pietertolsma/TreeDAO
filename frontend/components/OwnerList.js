@@ -3,12 +3,13 @@ import { useEffect, useMemo, useState } from "react";
 import useWallet from '../hooks/useWallet';
 
 import { getMemberAccounts, getTotalSupply } from "../lib/contract";
+import { useStore } from '../lib/store';
 import { shortenAddress } from '../lib/util';
 
 export default function OwnerList() {
 
   const [memberAccounts, setMemberAccounts] = useState([]);
-  const [totalSupply, setTotalSupply] = useState(1);
+  const {totalSupply, setTotalSupply} = useStore();
 
   const wallet = useWallet();
 

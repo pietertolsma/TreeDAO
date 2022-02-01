@@ -14,16 +14,22 @@ const bundleDropModule = sdk.getBundleDropModule(
 
 const voteModule = sdk.getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
 
+export const getHasVoted = (proposalId, account, callback, err) => {
+  voteModule.hasVoted(proposalId, account)
+    .then((res) => callback(res))
+    .catch((error) => err("Failed to fetch vote status for " + proposalId, error))
+}
+
 export const getAllProposals = (callback, err) => {
   voteModule.getAll()
     .then((results) => {
       let props = [];
       for (const prop of results) {
         let executions = []
-
         for (const exec of prop.executions) {
           if (exec.transactionData != "0x") {
             executions.push({
+              to: exec.toAddress, 
               eth: exec.nativeTokenValue.toString(),
               sapling: parseFloat(String(tokenModule.contract.interface.decodeFunctionData("mint", prop.executions[0].transactionData)).split(",")[1])
             });
@@ -35,9 +41,9 @@ export const getAllProposals = (callback, err) => {
           id: prop.proposalId,
           proposer: prop.proposer,
           votes: {
-            "Against" : prop.votes[0].count.toString(),
-            "For" : prop.votes[1].count.toString(),
-            "Abstain" : prop.votes[2].count.toString()
+            "Against" : parseInt(ethers.utils.formatEther(prop.votes[0].count)),
+            "For" : parseInt(ethers.utils.formatEther(prop.votes[1].count)),
+            "Abstain" : parseInt(ethers.utils.formatEther(prop.votes[2].count))
           },
           state: prop.state,
           executions,
