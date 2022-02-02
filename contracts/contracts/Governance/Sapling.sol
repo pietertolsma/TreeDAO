@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
-//https://raw.githubusercontent.com/Saplingound-finance/Saplingound-protocol/master/contracts/Governance/Sapling.sol
+//https://raw.githubusercontent.com/Compound-finance/Compound-protocol/master/contracts/Governance/Compound.sol
 
 contract Sapling {
     /// @notice EIP-20 token name for this token

@@ -11,8 +11,6 @@ describe("Sapling", function () {
     await sapling.deployed();
 
     const totalSupply = await sapling.totalSupply();
-    const decimals = await sapling.decimals();
-    const ownerBalance = await sapling.balanceOf(owner.address);
 
     expect(await sapling.totalSupply()).to.equal(await sapling.balanceOf(owner.address));
 
