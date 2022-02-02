@@ -10,10 +10,10 @@ import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.so
 
 // Generated using https://wizard.openzeppelin.com/#governor
 
-contract Governance is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl {
+contract TestGovernance is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl {
     constructor(ERC20Votes _token, TimelockController _timelock)
-        Governor("Governance")
-        GovernorSettings(1 /* 1 block */, 45818 /* 1 week */, 100000e18)
+        Governor("TestGovernance")
+        GovernorSettings(1 /* 1 block */, 2 /* 2 blocks */, 100000e18)
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(4)
         GovernorTimelockControl(_timelock)
