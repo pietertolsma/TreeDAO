@@ -98,6 +98,8 @@ describe("Governance", function () {
         await ethers.provider.send("evm_mine", [now + 3600]);
 
         await governance.execute(targets, values, calldatas, descHash);
+
+        expect(await sapling.balanceOf(timelock.address)).to.equal(ethers.utils.parseEther("0"));
     });
 });
 
