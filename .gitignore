@@ -37,3 +37,4 @@
 .env
 
 contracts/hardhat.config.ts
+contracts/.env.local
