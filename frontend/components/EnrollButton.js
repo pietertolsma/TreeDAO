@@ -3,19 +3,21 @@ import { useWeb3React } from '@web3-react/core';
 
 import {  useState } from 'react';
 
-import { mintMembershipNFT } from '../lib/contract';
+import { hasMembership, mintMembershipNFT } from '../lib/contract';
 
 export default function EnrollButton(props) {
   const [isClaiming, setIsClaiming] = useState(false);
 
-  const { account, library } = useWeb3React();
+  const { account, provider, library } = useWeb3React();
 
   const mintNft = () => {
     setIsClaiming(true);
 
-    mintMembershipNFT(account, library, (res) => {
-      setIsClaiming(res);
-    }, (msg, err) => console.error(msg, err));
+    mintMembershipNFT(library.getSigner())
+      .then((res) => {
+        hasMembership(account, provider).then((res)=>setIsClaiming(false));
+      })
+      .catch((reason) => console.error("Something went wrong..", reason));
   }
 
   return (

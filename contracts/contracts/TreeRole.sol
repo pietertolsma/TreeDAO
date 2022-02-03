@@ -30,7 +30,7 @@ contract TreeRole is Initializable, ERC1155Upgradeable, OwnableUpgradeable, ERC1
     function mintMembership() public {
         require(balanceOf(msg.sender, 0) == 0, "TreeRole::mintMembership: minter is already a member");
 
-        mint(msg.sender, 0, 1, "");
+        _mint(msg.sender, 0, 1, "");
         emit MembershipMinted(msg.sender);
     }
 

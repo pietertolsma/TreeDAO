@@ -2,8 +2,9 @@ import sdk from "../scripts/1-initialize-sdk";
 
 import { ethers } from "ethers";
 import { ThirdwebSDK, VoteType } from "@3rdweb/sdk";
-import { SAPLING_ADDRESS } from "./constants";
+import { SAPLING_ADDRESS, TREEROLE_ADDRESS } from "./constants";
 import { saplingAbi } from "./contracts/sapling";
+import { treeRoleAbi } from "./contracts/treerole";
 
 const tokenModule = sdk.getTokenModule(
     "0x5fE4cf831d7E4A23aF72BeBC12622CCdcb32f8DD"
@@ -97,20 +98,9 @@ export const submitProposal = (account, library, {description, to_address, eth_a
     });
 };
 
-export const mintMembershipNFT = (account, library, callback, err) => {
-
-  const signer = library.getSigner(account);
-  const module = new ThirdwebSDK(signer).getBundleDropModule(
-    "0x156E3800528CC8604C77788f9d629D47113479d4");
-
-  module
-      .claim("0", 1)
-      .then(() => {
-        callback(true);
-      })
-      .catch((error) => {
-        err("Failed to claim :(", error);
-      });
+export const mintMembershipNFT = (signer) => {
+  const treeroleContract = new ethers.Contract(TREEROLE_ADDRESS, treeRoleAbi, signer);
+  return treeroleContract.mintMembership();
 }
 
 export const joinMembersWithBalances = (members, balances) => {
@@ -135,17 +125,12 @@ export const getTokens = (address, provider) => {
   return saplingContract.balanceOf(address);
 }
 
-export const hasMembership = async (address, callback, err) => {
-    bundleDropModule
-        .balanceOf(address, "0") // "0" = tokenId
-        .then((balance) => {
-            if (balance.gt(0)) {
-                callback(true);
-            } else {
-                callback(false);
-            }
-        })
-        .catch((error) => {
-            err("Failed to get NFT balance", error);
-        });
+export const hasMembership = (address, provider) => {
+  console.log(address);
+  const treeroleContract = new ethers.Contract(TREEROLE_ADDRESS, treeRoleAbi, provider);
+
+  return new Promise(async (resolve, reject) => {
+    const res = await treeroleContract.balanceOf(address, 0);
+    resolve(parseFloat(res.toNumber()) > 0);
+  });
 }

@@ -17,16 +17,16 @@ import { getTransferEvents } from '../lib/scan';
 export default function Home() {
 
   const { isMember, setIsMember, disco} = useStore((state) => state);
-  const { address } = useWallet();
+  const { address, provider } = useWallet();
 
   const defaultBackground = "gray.100";
   const colors = ["#fea3aa", "#f8b88b", "#faf884", "#baed91", "#b2cefe", "#f2a2e8"]
   const [colorIndex, setColorIndex] = useState(0);
 
   useEffect(() => {
-
     if (!address) return;
-    hasMembership(address, (res) => setIsMember(res), (msg, err) => console.error(msg, err));
+    hasMembership(address, provider).then((res) => setIsMember(res))
+      .catch((reason) => console.error("Something went wrong", reason));
   }, [address]);
 
   const memberView = (
@@ -90,7 +90,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <Box pt="10" style={backgroundStyle} backgroundColor={disco ? colors[colorIndex] : defaultBackground}>
+        <Box pt="10" minHeight="100vh" style={backgroundStyle} backgroundColor={disco ? colors[colorIndex] : defaultBackground}>
           <Box backgroundColor="white" maxWidth="1200px" m="0px auto" textAlign="center">
             {connected}
           </Box>

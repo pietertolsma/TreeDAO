@@ -34,6 +34,7 @@ describe("TreeRole", function () {
 
     it("Should succesfully mint a membership role", async () => {
         expect(await treerole.mintMembership()).to.emit(treerole, "MembershipMinted");
+        expect(await treerole.connect(addr1).mintMembership()).to.emit(treerole, "MembershipMinted");
         expect(await treerole.balanceOf(owner.address, 0)).to.equal(1);
 
         await expect(treerole.mintMembership()).to.be.revertedWith('TreeRole::mintMembership: minter is already a member');
