@@ -35,3 +35,5 @@
 /frontend/.vercel
 
 .env
+
+/contracts/hardhat.config.ts
