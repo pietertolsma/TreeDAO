@@ -31,9 +31,14 @@ async function main() {
   const governance = await Governance.deploy(sapling.address, timelock.address);
   await governance.deployed();
 
+  const TreeRole = await ethers.getContractFactory('TreeRole')
+  const treerole = await upgrades.deployProxy(TreeRole, []);
+  await treerole.deployed();
+
   console.log("Sapling deployed to:", sapling.address);
   console.log("Governance deployed to:", governance.address);
   console.log("Timelock deployed to:", timelock.address);
+  console.log("Treerole deployed to:", treerole.address);
 
   await timelock.grantRole("0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63", governance.address);
   await timelock.grantRole("0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1", governance.address);
