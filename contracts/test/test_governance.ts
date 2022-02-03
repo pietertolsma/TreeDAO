@@ -97,7 +97,7 @@ describe("Governance", function () {
         await governance.castVote(proposalId, 1);
         await governance.connect(addr1).castVote(proposalId, 1);
 
-        // mine 2 blocks
+        // mine 5 blocks
         await network.provider.send("evm_mine");
         await network.provider.send("evm_mine");
         await network.provider.send("evm_mine");

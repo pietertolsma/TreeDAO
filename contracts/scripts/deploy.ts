@@ -14,10 +14,20 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
-
-  await greeter.deployed();
+  const Sapling = await ethers.getContractFactory("Sapling");
+  const sapling = await upgrades.deployProxy(Sapling, []);
+  await sapling.deployed();
+    
+  const Timelock = await ethers.getContractFactory('TimelockController');
+  const minDelay = 3600;
+  const proposers = [owner.address];
+  const executors = [owner.address];
+  const timelock = await Timelock.deploy(minDelay, proposers, executors);
+  await timelock.deployed();
+    
+  const Governance = await ethers.getContractFactory('TestGovernance')
+  const governance = await Governance.deploy(sapling.address, timelock.address);
+  await governance.deployed();
 
   console.log("Greeter deployed to:", greeter.address);
 }
