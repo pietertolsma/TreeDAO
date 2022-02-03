@@ -36,4 +36,4 @@
 
 .env
 
-/contracts/hardhat.config.ts
+contracts/hardhat.config.ts
