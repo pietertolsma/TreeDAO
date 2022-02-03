@@ -48,7 +48,7 @@ describe("Governance", function () {
         await (sapling.transfer(addr1.address, ethers.utils.parseEther("500000")));
 
         // Checkpoints require us to delegate to ourselves
-        await (sapling.delegate(owner.address,));
+        await (sapling.delegate(owner.address));
         await (sapling.connect(addr1).delegate(addr1.address));
 
         await timelock.grantRole("0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63", governance.address);
