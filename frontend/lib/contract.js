@@ -1,8 +1,9 @@
 import sdk from "../scripts/1-initialize-sdk";
 
 import { ethers } from "ethers";
-import { useWeb3React } from "@web3-react/core";
 import { ThirdwebSDK, VoteType } from "@3rdweb/sdk";
+import { SAPLING_ADDRESS } from "./constants";
+import { saplingAbi } from "./contracts/sapling";
 
 const tokenModule = sdk.getTokenModule(
     "0x5fE4cf831d7E4A23aF72BeBC12622CCdcb32f8DD"
@@ -112,14 +113,6 @@ export const mintMembershipNFT = (account, library, callback, err) => {
       });
 }
 
-export const getMemberAccounts = (callback, err) => {
-    getAllMembers((members) => {
-        getAllHolderBalances((balances) => {
-            callback(joinMembersWithBalances(members, balances).sort((left, right) => parseInt(left.tokenAmount) < parseInt(right.tokenAmount)));
-        }, err);
-    }, err);
-}
-
 export const joinMembersWithBalances = (members, balances) => {
     return members.map((address) => {
         return {
@@ -132,54 +125,14 @@ export const joinMembersWithBalances = (members, balances) => {
       });
 }
 
-export const getAllMembers = (callback, err) => {
-    bundleDropModule
-    .getAllClaimerAddresses("0")
-    .then((addresses) => {
-        // Add contracts as well
-      callback(["0x96E88D1296D7A44c32684fbB1d9eB88e2D498cfd", "0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD", ...addresses]);
-    })
-    .catch((error) => {
-      err("Failed to fetch members", error);
-    });
+export const getTotalSupply = (provider) => {
+  const saplingContract = new ethers.Contract(SAPLING_ADDRESS, saplingAbi, provider);
+  return saplingContract.totalSupply();
 }
 
-export const getAllHolderBalances = (callback, err) => {
-    tokenModule
-      .getAllHolderBalances()
-      .then((amounts) => {
-        callback(amounts);
-      })
-      .catch((error) => {
-        err("Failed to fetch amounts", error);
-      });
-}
-
-export const getTotalSupply = (callback, err) => {
-    tokenModule
-      .totalSupply()
-      .then((supply) => {
-        callback(ethers.utils.formatUnits(
-          supply || 1,
-          18
-        ));
-      })
-      .catch((error) => err("Failed to get total supply", error));
-}
-
-export const getTokens = (address, callback, err) => {
-    tokenModule
-        .balanceOf(address)
-        .then((balance) => {
-            const readableBalance = ethers.utils.formatUnits(
-                balance.value || 0,
-                18
-              );
-            callback(readableBalance);
-        })
-        .catch((error) => {
-            err("Failed to get NFT balance", error);
-        });
+export const getTokens = (address, provider) => {
+  const saplingContract = new ethers.Contract(SAPLING_ADDRESS, saplingAbi, provider);
+  return saplingContract.balanceOf(address);
 }
 
 export const hasMembership = async (address, callback, err) => {

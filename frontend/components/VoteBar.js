@@ -7,8 +7,6 @@ function VoteBar({votes, currentVote, props}) {
     const { totalSupply, tokens } = useStore();
     const totalVotes = votes.Against + votes.For + votes.Abstain;
 
-    console.log(votes);
-
     const votePercentages = {
         'For' : (100 * (votes.For + (currentVote === "For" ? tokens : 0)) / totalSupply),
         'Against' : (100 * (votes.Against + (currentVote === "Against" ? tokens : 0))/ totalSupply),

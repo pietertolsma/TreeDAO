@@ -1,30 +1,38 @@
 import { Heading, Text, Flex, Stack, SimpleGrid, Divider, RangeSlider, RangeSliderTrack, RangeSliderFilledTrack, Skeleton } from '@chakra-ui/react'
+import { ethers } from 'ethers';
 import { useEffect, useMemo, useState } from "react";
 import useWallet from '../hooks/useWallet';
 
 import { getMemberAccounts, getTotalSupply } from "../lib/contract";
+import { getSaplingOwners } from '../lib/scan';
 import { useStore } from '../lib/store';
 import { shortenAddress } from '../lib/util';
 
 export default function OwnerList() {
 
-  const [memberAccounts, setMemberAccounts] = useState([]);
+  const [memberAccounts, setMemberAccounts] = useState({});
   const {totalSupply, setTotalSupply} = useStore();
 
   const wallet = useWallet();
 
   useEffect(() => {
-    getTotalSupply((res) => setTotalSupply(parseInt(res)), (msg, err) => console.error(msg, err));
-    getMemberAccounts((res) => setMemberAccounts(res), (msg, err) => console.error(msg, err));
-  }, [setTotalSupply, setMemberAccounts]);
+    getTotalSupply(wallet.provider).then((res) => setTotalSupply(parseFloat(ethers.utils.formatEther(res))))
+      .catch((reason) => console.error("Something went wrong", reason));
+    getSaplingOwners(wallet.provider)
+      .then((res) => setMemberAccounts(res))
+      .catch((reason) => console.error("Something went wrong", reason));
+  }, [totalSupply]);
 
+  const memberListView = Object.keys(memberAccounts).map((address, index) => {
+    const tokenAmount = memberAccounts[address];
 
-  const memberListView = memberAccounts.map(({address, tokenAmount}, index) => {
+    if (totalSupply == 0) return (<Text key={index}>Nothing here.</Text>);
+
     return (<SimpleGrid columns={2} spacing="5" m="1" direction="row" key={index} width="100%" backgroundColor={address == wallet.address ? "gray.200" : "white"}>
       <Flex justifyContent="right" align="center" height="50px">{shortenAddress(address)}</Flex>
       <Flex height="50px" direction="column" m="0 20px">
         <Text m="1" textAlign={"left"} fontSize="sm">{tokenAmount + " 🌳 (" + Math.floor(1000 * (tokenAmount / totalSupply)) / 10 + "%)"}</Text>
-        <RangeSlider defaultValue={[0, Math.floor(100 * (parseInt(tokenAmount) / totalSupply))]}>
+        <RangeSlider defaultValue={[0, (100*tokenAmount) / totalSupply]}>
           <RangeSliderTrack>
             <RangeSliderFilledTrack />
           </RangeSliderTrack>

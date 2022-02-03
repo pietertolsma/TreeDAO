@@ -22,6 +22,8 @@ import { useStore } from '../lib/store';
 import useWallet from '../hooks/useWallet';
 import { getTokens } from '../lib/contract';
 import { shortenAddress } from '../lib/util';
+import { getSaplingOwners } from '../lib/scan';
+import { ethers } from 'ethers';
 
 export default function Navigation() {
 
@@ -29,12 +31,13 @@ export default function Navigation() {
 
     const { isOpen, onToggle } = useDisclosure();
 
-    const { connectWallet, address, disconnectWallet } = useWallet();
+    const { connectWallet, address, provider, disconnectWallet } = useWallet();
 
     useEffect(() => {
       if (!address) return;
 
-      getTokens(address, (res) => setTokens(res), (msg, err) => console.error(msg, err));
+      getTokens(address, provider).then((res) => setTokens(parseFloat(ethers.utils.formatEther(res))))
+        .catch((reason) => console.error("Something went wrong", reason));
     }, [address, setTokens]);
 
     const connected = (

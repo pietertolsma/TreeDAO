@@ -5,7 +5,7 @@ export default function useWallet() {
         connectWallet, 
         address, 
         error, 
-        newProvider, 
+        provider, 
         disconnectWallet 
     } = useWeb3();
 
@@ -13,7 +13,7 @@ export default function useWallet() {
         connectWallet, 
         address, 
         error, 
-        newProvider, 
+        provider, 
         disconnectWallet 
     }
 }

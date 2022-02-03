@@ -12,6 +12,7 @@ import { hasMembership } from '../lib/contract';
 import WalletButton from '../components/WalletButton';
 import ProposalList from '../components/ProposalList';
 import VoteButton from '../components/VoteButton';
+import { getTransferEvents } from '../lib/scan';
 
 export default function Home() {
 
@@ -23,9 +24,10 @@ export default function Home() {
   const [colorIndex, setColorIndex] = useState(0);
 
   useEffect(() => {
+
     if (!address) return;
     hasMembership(address, (res) => setIsMember(res), (msg, err) => console.error(msg, err));
-  }, [address, setIsMember]);
+  }, [address]);
 
   const memberView = (
     <Box>
