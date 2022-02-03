@@ -19,16 +19,16 @@ const bigToNum = (big : BigNumber) : number => {
 }
 
 describe("Governance", function () {
-
     let sapling : Contract;
     let timelock : Contract;
     let governance : Contract;
     let owner : SignerWithAddress;
     let addr1 : SignerWithAddress;
+    let addr2 : SignerWithAddress;
     let now : number;
 
     beforeEach(async () => {
-        [owner, addr1] = await ethers.getSigners();
+        [owner, addr1, addr2] = await ethers.getSigners();
 
         const Sapling = await ethers.getContractFactory("Sapling");
         sapling = await upgrades.deployProxy(Sapling, []);
@@ -100,6 +100,9 @@ describe("Governance", function () {
         // mine 2 blocks
         await network.provider.send("evm_mine");
         await network.provider.send("evm_mine");
+        await network.provider.send("evm_mine");
+        await network.provider.send("evm_mine");
+        await network.provider.send("evm_mine");
 
         // Expect vote to pass (ProposalState.Succeeded = 4)
         expect(await governance.state(proposalId)).to.equal(4);
@@ -119,5 +122,46 @@ describe("Governance", function () {
 
         const newOwnerEth = await waffle.provider.getBalance(owner.address)
         expect(bigToNum(newOwnerEth)).to.be.greaterThan(bigToNum(ownerEth.add(toBig("0.49"))));
+    });
+
+    it("Should not allow voting, then moving tokens and voting again.", async () => {
+
+        now = (await ethers.provider.getBlock("latest")).timestamp;
+        await ethers.provider.send("evm_mine", [now + 72*3600]);
+
+        //address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description
+        let targets = [sapling.address];
+        let values = [0];
+        let cd1 = parseCallData("transfer", "function transfer(address to, uint256 amount)", [owner.address, ethers.utils.parseEther("10000.0")]);
+        let calldatas = [cd1]
+        let description = "Second Proposal!"
+        const tx = await governance.connect(addr1).propose(targets, values, calldatas, description);
+        // Fetch proposal ID
+        const res = await tx.wait();
+        const proposalId = res.events[0].args[0];
+
+        // Let some time expire
+        now = (await ethers.provider.getBlock("latest")).timestamp;
+        await ethers.provider.send("evm_mine", [now + 1]);
+
+        // Vote yes 50%
+        await governance.castVote(proposalId, 1);
+        // Now move tokens to addr2 and delegate to self
+        await sapling.transfer(addr2.address, toBig("500000"));
+        await sapling.connect(addr2).delegate(addr2.address);
+        // Now try to vote
+        await governance.connect(addr2).castVote(proposalId, 1);
+        // Let addr1 vote against
+        await governance.connect(addr1).castVote(proposalId, 0);
+
+        // mine 5 blocks
+        await network.provider.send("evm_mine");
+        await network.provider.send("evm_mine");
+        await network.provider.send("evm_mine");
+        await network.provider.send("evm_mine");
+        await network.provider.send("evm_mine");
+
+        // Expect vote to fail (ProposalState.Defeated = 3)
+        expect(await governance.state(proposalId)).to.equal(3);
     });
 });

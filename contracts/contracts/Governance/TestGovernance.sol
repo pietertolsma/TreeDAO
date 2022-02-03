@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.so
 contract TestGovernance is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl {
     constructor(ERC20Votes _token, TimelockController _timelock)
         Governor("TestGovernance")
-        GovernorSettings(1 /* 1 block */, 2 /* 2 blocks */, 100000e18)
+        GovernorSettings(1 /* 1 block */, 5 /* 2 blocks */, 100000e18)
         GovernorVotes(_token)
         GovernorVotesQuorumFraction(4)
         GovernorTimelockControl(_timelock)
