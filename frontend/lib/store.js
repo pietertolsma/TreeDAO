@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import create from 'zustand';
 import createContext from 'zustand/context'
 
@@ -42,7 +42,7 @@ export function useCreateStore(initialState) {
     store = store ?? initializeStore(initialState);
 
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (initialState && store) {
             store.setState({
                 ...store.getState(),
