@@ -6,6 +6,7 @@ import { GOVERNANCE_ADDRESS, SAPLING_ADDRESS, TREEROLE_ADDRESS } from "./constan
 import { saplingAbi } from "./contracts/sapling";
 import { treeRoleAbi } from "./contracts/treerole";
 import { governanceAbi } from "./contracts/governance";
+import { getProposals } from "./scan";
 
 const tokenModule = sdk.getTokenModule(
     "0x5fE4cf831d7E4A23aF72BeBC12622CCdcb32f8DD"
@@ -40,39 +41,47 @@ export const getHasVoted = (proposalId, account, callback, err) => {
     .catch((error) => err("Failed to fetch vote status for " + proposalId, error))
 }
 
-export const getAllProposals = (callback, err) => {
-  voteModule.getAll()
-    .then((results) => {
-      let props = [];
-      for (const prop of results) {
-        let executions = []
-        for (const exec of prop.executions) {
-          if (exec.transactionData != "0x") {
-            executions.push({
-              to: exec.toAddress, 
-              eth: exec.nativeTokenValue.toString(),
-              sapling: parseFloat(String(tokenModule.contract.interface.decodeFunctionData("mint", prop.executions[0].transactionData)).split(",")[1])
-            });
-          }
-        }
+// export const getAllProposals = (callback, err) => {
+//   voteModule.getAll()
+//     .then((results) => {
+//       let props = [];
+//       for (const prop of results) {
+//         let executions = []
+//         for (const exec of prop.executions) {
+//           if (exec.transactionData != "0x") {
+//             executions.push({
+//               to: exec.toAddress, 
+//               eth: exec.nativeTokenValue.toString(),
+//               sapling: parseFloat(String(tokenModule.contract.interface.decodeFunctionData("mint", prop.executions[0].transactionData)).split(",")[1])
+//             });
+//           }
+//         }
 
-        props.push({
-          description: prop.description,
-          id: prop.proposalId,
-          currentVote: 'Inactive',
-          proposer: prop.proposer,
-          votes: {
-            "Against" : parseInt(ethers.utils.formatEther(prop.votes[0].count)),
-            "For" : parseInt(ethers.utils.formatEther(prop.votes[1].count)),
-            "Abstain" : parseInt(ethers.utils.formatEther(prop.votes[2].count))
-          },
-          state: prop.state,
-          executions,
-        })
-      }
-      callback(props)
-    })
-    .catch((error) => err(error));
+//         props.push({
+//           description: prop.description,
+//           id: prop.proposalId,
+//           currentVote: 'Inactive',
+//           proposer: prop.proposer,
+//           votes: {
+//             "Against" : parseInt(ethers.utils.formatEther(prop.votes[0].count)),
+//             "For" : parseInt(ethers.utils.formatEther(prop.votes[1].count)),
+//             "Abstain" : parseInt(ethers.utils.formatEther(prop.votes[2].count))
+//           },
+//           state: prop.state,
+//           executions,
+//         })
+//       }
+//       callback(props)
+//     })
+//     .catch((error) => err(error));
+// }
+
+export const getAllProposals = (provider) => {
+  return new Promise(async (resolve, reject) => {
+    const proposals = await getProposals(provider);
+
+    resolve(proposals);
+  });
 }
 
 const parseCallData = (functionName, signature, parameters) => {
@@ -92,7 +101,6 @@ export const submitProposal = (library, desc, transactions) => {
     let values = [];
 
     for (const tx of transactions) {
-      console.log(tx);
       if (tx.type == 'mint') {
         targets.push(SAPLING_ADDRESS);
         values.push(0);
@@ -110,7 +118,7 @@ export const submitProposal = (library, desc, transactions) => {
       }
     }
 
-    const tx = await governanceContract.propose(targets, values, calldatas, desc);
+   const tx = await governanceContract.propose(targets, values, calldatas, desc);
     const res = await tx.wait();
     resolve(res.events[0].args[0]);
 

@@ -15,7 +15,6 @@ function ProposalForm(props) {
     const { library } = useWeb3React();
 
     function submit(values, actions) {
-        console.log(values);
         setProposing(true);
         submitProposal(library, values.description, values.transactions)
             .then((id) => {
@@ -76,12 +75,11 @@ function ProposalForm(props) {
                     <Flex direction="row" align="center" mt="2">
                         <Field name={`transactions[${index}].amount`}>
                             {({field, form}) => {
-                                
                                 return (
                                     <FormControl mr="5" maxWidth="200px" isInvalid={invalidField(form, `transactions[${index}].amount`)}>
                                         {/* <FormLabel htmlFor='sapling_amount'>🌳 to Mint</FormLabel> */}
-                                        <NumberInput id={`transactions[${index}].amount`} defaultValue={val.amount} precision={2} step={1}>
-                                            <NumberInputField />
+                                        <NumberInput precision={2} step={1}>
+                                            <NumberInputField {...field}  value={val.amount} id={`transactions[${index}].amount`} />
                                             <NumberInputStepper>
                                                 <NumberIncrementStepper />
                                                 <NumberDecrementStepper />

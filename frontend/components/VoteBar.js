@@ -11,7 +11,7 @@ function VoteBar({votes, currentVote, props}) {
         'For' : (100 * (votes.For + (currentVote === "For" ? tokens : 0)) / totalSupply),
         'Against' : (100 * (votes.Against + (currentVote === "Against" ? tokens : 0))/ totalSupply),
         'Abstain' : (100 * (votes.Abstain + (currentVote === "Abstain" ? tokens : 0)) / totalSupply),
-        'NotVoted' : (100 * (totalSupply - totalVotes) / totalSupply)
+        'NotVoted' : (100 * (totalSupply - totalVotes - tokens) / totalSupply)
     }
 
     return (

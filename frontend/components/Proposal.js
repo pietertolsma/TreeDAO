@@ -54,6 +54,7 @@ export default function Proposal({changeVote, proposal}) {
     const { account } = useWeb3React();
 
     useEffect(() => {
+      console.log(proposal);
       getHasVoted(proposal.id, account, 
         (res) => setHasVoted(res),
         (msg, err) => console.error(msg, err));
@@ -66,10 +67,10 @@ export default function Proposal({changeVote, proposal}) {
 
     const group = getRootProps();
 
-    const executions = proposal.executions.map((exec, index) => (
+    const executions = proposal.transactions.map((tx, index) => (
       <Box key={index} borderWidth="1px" p="3" borderRadius="lg" textAlign='left'>
         <Text fontSize='xs'>Transaction #{index}</Text>
-        <Text fontSize='xs'>Transfer {exec.eth} ETH from treasury and mint {exec.sapling} 🌳 to {shortenAddress(exec.to)}</Text>
+        <Text fontSize='xs'>Transfer {tx.amount} 🌳 to {shortenAddress(tx.to)}</Text>
       </Box>
     ))
 
@@ -98,7 +99,7 @@ export default function Proposal({changeVote, proposal}) {
         <Box borderWidth="1px" p="3" borderRadius="lg" width="100%" mb="3">
             <Text m="2" fontSize='lg'>{proposal.description}</Text>
             <Flex direction='column'>
-              {proposal.executions.length > 0 ? executions : noExecutions}
+              {proposal.transactions.length > 0 ? executions : noExecutions}
             </Flex>
             {hasVoted ? alreadyVoted : voteButtons}
             <VoteBar votes={proposal.votes} currentVote={hasVoted ? "" : proposal.currentVote}/>

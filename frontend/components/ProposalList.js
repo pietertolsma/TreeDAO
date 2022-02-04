@@ -1,6 +1,7 @@
 import { Box, Text } from "@chakra-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import { useEffect, useState } from "react";
+import useWallet from "../hooks/useWallet";
 import { getAllProposals, submitVotes } from "../lib/contract";
 import Proposal from "./Proposal";
 import VoteButton from "./VoteButton";
@@ -10,11 +11,12 @@ export default function ProposalList(props) {
     const [proposals, setProposals] = useState([]);
     const [isVoting, setIsVoting] = useState(false);
     const { account, library } = useWeb3React();
+    const wallet = useWallet();
 
     useEffect(() => {
-        getAllProposals((res) => {
-            setProposals(res);
-        }, (msg, err) => console.error(msg, err));
+        getAllProposals(wallet.provider)
+            .then((res) => setProposals(res))
+            .catch((reason) => console.error("Something went wrong fetching the proposals..", reason));
     }, []);
 
     const onSubmit = () => {

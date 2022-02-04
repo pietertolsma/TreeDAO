@@ -1,5 +1,6 @@
 import { Contract, ethers } from "ethers";
 import { GOVERNANCE_ADDRESS, SAPLING_ADDRESS } from "./constants";
+import { saplingAbi } from "./contracts/sapling";
 
 export const getSaplingOwners = (provider) => {
     return new Promise(async (resolve, reject) => {
@@ -48,9 +49,37 @@ export const getProposals = (provider) => {
 
         const proposals = [];
 
-        for (const prop of proposals) {
-            console.log(prop);
-            //TODO IMPLEMENT THIS
+        for (const e of events) {
+
+            let transactions = [];
+            
+            for (const cd of e.args.calldatas) {
+                const iface = new ethers.utils.Interface(saplingAbi);
+                const decode = iface.decodeFunctionData('transfer', cd);
+
+                transactions.push({
+                    "type":  "SAP",
+                    "amount" : ethers.utils.formatEther(decode.amount),
+                    "to" : decode.recipient
+                });
+
+                // TODO: ALSO CHECK FOR ETH WITHDRAWALS
+            }
+
+            proposals.push({
+                id: e.args.proposalId,
+                description: e.args.description,
+                proposer: e.args.proposer,
+                startBlock: e.args.startBlock,
+                endBlock: e.args.endBlock,
+                targets: e.args.targets,
+                votes: {
+                    'Against' : 0,
+                    'For' : 0,
+                    'Abstain' : 0
+                },
+                transactions
+            })
         }
 
         resolve(proposals);
