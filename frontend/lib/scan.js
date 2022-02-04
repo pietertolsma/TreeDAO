@@ -39,6 +39,15 @@ export const getSaplingOwners = (provider) => {
     });
 }
 
+const tryDecode = (abi, fn, calldata) => {
+    try {
+        const iface = new ethers.utils.Interface(abi);
+        return iface.decodeFunctionData(fn, calldata);
+    } catch (e) {
+        return undefined;
+    }
+}
+
 export const getProposals = (provider) => {
     return new Promise(async (resolve, reject) => {
         const abi = ["event ProposalCreated(uint proposalId, address proposer, address[] targets, uint[] values, string[] signatures, bytes[] calldatas, uint startBlock, uint endblock, string description)"]
@@ -53,17 +62,26 @@ export const getProposals = (provider) => {
 
             let transactions = [];
             
+            let index = 0;
             for (const cd of e.args.calldatas) {
-                const iface = new ethers.utils.Interface(saplingAbi);
-                const decode = iface.decodeFunctionData('transfer', cd);
 
-                transactions.push({
-                    "type":  "SAP",
-                    "amount" : ethers.utils.formatEther(decode.amount),
-                    "to" : decode.recipient
-                });
+                let res;
+                if (res = tryDecode(["function transfer(address to, uint256 amount)"], "transfer", cd)) {
+                    console.log(res);
+                    transactions.push({
+                        "type":  "SAP",
+                        "amount" : ethers.utils.formatEther(res.amount),
+                        "to" : res.to
+                    });
+                } else if (res = tryDecode(["function send(uint256 amount)"], "send", cd)) {
+                    transactions.push({
+                        "type":  "ETH",
+                        "amount" : (res / 10**18).toString(),
+                        "to" : e.args.targets[index]
+                    });
+                }
 
-                // TODO: ALSO CHECK FOR ETH WITHDRAWALS
+                index++;
             }
 
             proposals.push({

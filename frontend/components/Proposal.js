@@ -54,7 +54,6 @@ export default function Proposal({changeVote, proposal}) {
     const { account } = useWeb3React();
 
     useEffect(() => {
-      console.log(proposal);
       getHasVoted(proposal.id, account, 
         (res) => setHasVoted(res),
         (msg, err) => console.error(msg, err));
@@ -70,7 +69,7 @@ export default function Proposal({changeVote, proposal}) {
     const executions = proposal.transactions.map((tx, index) => (
       <Box key={index} borderWidth="1px" p="3" borderRadius="lg" textAlign='left'>
         <Text fontSize='xs'>Transaction #{index}</Text>
-        <Text fontSize='xs'>Transfer {tx.amount} 🌳 to {shortenAddress(tx.to)}</Text>
+        <Text fontSize='xs'>Transfer {tx.amount} {tx.type} to {shortenAddress(tx.to)}</Text>
       </Box>
     ))
 

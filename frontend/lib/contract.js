@@ -41,41 +41,6 @@ export const getHasVoted = (proposalId, account, callback, err) => {
     .catch((error) => err("Failed to fetch vote status for " + proposalId, error))
 }
 
-// export const getAllProposals = (callback, err) => {
-//   voteModule.getAll()
-//     .then((results) => {
-//       let props = [];
-//       for (const prop of results) {
-//         let executions = []
-//         for (const exec of prop.executions) {
-//           if (exec.transactionData != "0x") {
-//             executions.push({
-//               to: exec.toAddress, 
-//               eth: exec.nativeTokenValue.toString(),
-//               sapling: parseFloat(String(tokenModule.contract.interface.decodeFunctionData("mint", prop.executions[0].transactionData)).split(",")[1])
-//             });
-//           }
-//         }
-
-//         props.push({
-//           description: prop.description,
-//           id: prop.proposalId,
-//           currentVote: 'Inactive',
-//           proposer: prop.proposer,
-//           votes: {
-//             "Against" : parseInt(ethers.utils.formatEther(prop.votes[0].count)),
-//             "For" : parseInt(ethers.utils.formatEther(prop.votes[1].count)),
-//             "Abstain" : parseInt(ethers.utils.formatEther(prop.votes[2].count))
-//           },
-//           state: prop.state,
-//           executions,
-//         })
-//       }
-//       callback(props)
-//     })
-//     .catch((error) => err(error));
-// }
-
 export const getAllProposals = (provider) => {
   return new Promise(async (resolve, reject) => {
     const proposals = await getProposals(provider);
