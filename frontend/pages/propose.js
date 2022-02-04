@@ -13,7 +13,7 @@ export default function Propose() {
             </Head>
     
             <main>
-            <Box height="100vh" pt="5" backgroundColor="gray.100">
+            <Box minHeight="100vh" pt="5" backgroundColor="gray.100">
                 <Box backgroundColor="white" maxWidth="1200px" m="0px auto" textAlign="center">
                     <Box maxWidth="800px" m="0 auto" p="5" >
                         <Heading align="left" mb="5">Make a TreeDAO Proposal.</Heading>

@@ -2,95 +2,118 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Ic
 import { CloseIcon } from '@chakra-ui/icons';
 import { useWeb3React } from "@web3-react/core";
 import { errors } from "ethers";
-import { Field, Form, Formik } from 'formik';
+import { ErrorMessage, Field, FieldArray, Form, Formik, getIn } from 'formik';
 import { useState } from "react";
 import { submitProposal } from "../lib/contract";
+import useWallet from "../hooks/useWallet";
+import * as Yup from 'yup';
 
 
 function ProposalForm(props) {
 
     const [ isProposing, setProposing ] = useState(false);
-    const { account, library } = useWeb3React();
-
-    const [ transactions, setTransactions ] = useState([]);
-
-    const onTxSelect = (e) => {
-        setTransactions([...transactions, e.target.value]);
-    }
+    const { library } = useWeb3React();
 
     function submit(values, actions) {
+        console.log(values);
         setProposing(true);
-        submitProposal(account, library, values, (res) => {
-            console.log("Succesfully proposed!");
-            setProposing(false);
-        }, (msg, err) => {
-            console.error(msg, err)
-            setProposing(false);
-        });
+        submitProposal(library, values.description, values.transactions)
+            .then((id) => {
+                console.log("Proposal created! With ID " + id)
+                setProposing(false);
+            })
+            .catch((reason) => {
+                console.error("Something went wrong with creating proposal..", reason)
+                setProposing(false);
+            });
     }
 
-    function validate(val) {
-        const errors = {};
-        if (!val.description) {
-            errors.description = 'Required'
-        }
-
-        if (!val.to_address) {
-            errors.to_address = 'Required'
-        } else if (!/^0x[a-fA-F0-9]{40}$/.test(val.to_address)) {
-            errors.to_address = 'Invalid address format'
-        }
-        return errors;
-    }
-
-    const transactionComponents = transactions.map((val, index) => {
-
-        const titleMap = {
-            "eth" : "Withdraw ETH from treasury to address",
-            "mint" : "Mint new 🌳 Sapling tokens to address"
-        }
-
-        return (
-            <Flex mt="3" ml="5" key={index} direction='column'>
-                <Text align="left">#{index+1}: {titleMap[val]}</Text>
-                <Flex direction="row" align="center" mt="2">
-                    <Field name={"amount"+index}>
-                        {({field, form}) => (
-                            <FormControl mr="5" maxWidth="200px" isInvalid={errors.sapling_amount && form.touched.sapling_amount}>
-                                {/* <FormLabel htmlFor='sapling_amount'>🌳 to Mint</FormLabel> */}
-                                <NumberInput defaultValue={0} id={"amount"+index} precision={2} step={1}>
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                        <NumberIncrementStepper />
-                                        <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                </NumberInput>
-                                <FormErrorMessage>{errors.sapling_amount}</FormErrorMessage>
-                            </FormControl>
-                        )}
-                    </Field>
-                    <Field name={"to_address"+index}>
-                        {({field, form}) => (
-                            <FormControl mr="2" isInvalid={errors.to_address && form.touched.to_address}>
-                                {/* <FormLabel htmlFor='to_address'>Target Address</FormLabel> */}
-                                <Input {...field} id={"to_address"+index} placeholder='0x...' />
-                                <FormErrorMessage>{errors.to_address}</FormErrorMessage>
-                            </FormControl>
-                        )}
-                    </Field>
-                    <IconButton ml="3" aria-label='Remove TX' icon={<CloseIcon />} onClick={() => setTransactions(transactions.filter((_, i) => i != index))} />
-                </Flex>
-            </Flex>
+    const schema = Yup.object().shape({
+        description: Yup.string().required('Required'),
+        transactions: Yup.array()
+            .of(
+                Yup.object().shape({
+                    amount: Yup.number().min(0, "Can't be negative").required('Required'),
+                    to: Yup.string()
+                        .test('valid-address', 'Invalid address', (val) => /^0x[a-fA-F0-9]{40}$/.test(val))
+                        .required('Required')
+                })
             )
     });
 
+    const invalidField = (form, name) => {
+        const error = getIn(form.errors, name);
+        const touch = getIn(form.touched, name);
+
+        return error && touch;
+    }
+
+    const ErrorMessage = ({ name }) => (
+        <Field name={name}> 
+        {
+            (props) => {
+                const error = getIn(props.form.errors, name);
+                const touch = getIn(props.form.touched, name);
+                if (touch && error) {
+                    return (<FormErrorMessage>{error}</FormErrorMessage>) 
+                }
+                return (<Text></Text>);
+          }}
+        </Field>
+      );
+
+    const transactionComponents = (arrayHelpers, transactions) => {
+        return transactions.map((val, index) => {
+
+            const titleMap = {
+                "eth" : "Withdraw ETH from treasury to address",
+                "mint" : "Mint new 🌳 Sapling tokens to address"
+            }
+
+            return (
+                <Flex mt="3" ml="5" key={index} direction='column'>
+                    <Text align="left">#{index+1}: {titleMap[val.type]}</Text>
+                    <Flex direction="row" align="center" mt="2">
+                        <Field name={`transactions[${index}].amount`}>
+                            {({field, form}) => {
+                                
+                                return (
+                                    <FormControl mr="5" maxWidth="200px" isInvalid={invalidField(form, `transactions[${index}].amount`)}>
+                                        {/* <FormLabel htmlFor='sapling_amount'>🌳 to Mint</FormLabel> */}
+                                        <NumberInput id={`transactions[${index}].amount`} defaultValue={val.amount} precision={2} step={1}>
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
+                                        <ErrorMessage name={`transactions[${index}].amount`} />
+                                    </FormControl>
+                            )}}
+                        </Field>
+                        <Field name={`transactions[${index}].to`}>
+                            {({field, form}) => (
+                                <FormControl mr="2" value={val.to} isInvalid={invalidField(form, `transactions[${index}].to`)}>
+                                    {/* <FormLabel htmlFor='to_address'>Target Address</FormLabel> */}
+                                    <Input {...field} id={`transactions[${index}].to`} placeholder='0x...' />
+                                    <ErrorMessage name={`transactions[${index}].to`} />
+                                </FormControl>
+                            )}
+                        </Field>
+                        <IconButton ml="3" aria-label='Remove TX' icon={<CloseIcon />} onClick={() => arrayHelpers.remove(index)} />
+                    </Flex>
+                </Flex>
+                )
+        });
+    };
+
     return (
         <Box {...props}  borderWidth="1px" p="3" borderRadius="lg">
-            <Formik initialValues={{ description: "", to_address: "", eth_amount: 0, sapling_amount: 0}}
+            <Formik initialValues={{ description: "", transactions: []}}
                     onSubmit={(values, actions) => {
                         submit(values)
-                    }} validate={validate} >
-                {({errors}) => (
+                    }} validationSchema={schema} >
+                {({values, errors}) => (
                     <Form>
                         <Field name='description' isRequired>
                             {({field, form}) => (
@@ -101,17 +124,23 @@ function ProposalForm(props) {
                                 </FormControl>
                             )}
                         </Field>
-                        <Flex mt="5" direction="column">
-                            <FormLabel align="left">Transactions within this proposal:</FormLabel>
-                            <Text fontSize="sm" align="left">(All these transaction will be executed atomically once the proposal is executed.)</Text>
-                            {transactionComponents}
-                            <Flex direction='column' mt="5" ml="5">
-                                <Select mt="1" placeholder='Select transaction type' value="" onChange={(e) => onTxSelect(e)}>
-                                    <option value='eth'>Withdraw ETH</option>
-                                    <option value='mint'>Mint SAP</option>
-                                </Select>
+                        <FieldArray
+                            name='transactions'
+                            render={arrayHelpers => (
+                                <Flex mt="5" direction="column">
+                                    <FormLabel align="left">Transactions within this proposal:</FormLabel>
+                                    <Text fontSize="sm" align="left">(All these transaction will be executed atomically once the proposal is executed.)</Text>
+                                    {transactionComponents(arrayHelpers, values.transactions)}
+                                    <Flex direction='column' mt="5" ml="5">
+                                    <Select disabled={values.transactions.length >= 10} mt="1" placeholder='Select transaction type' value="" onChange={(e) => {
+                                        arrayHelpers.push({type: e.target.value, amount: 0, to: ""})
+                                    }}>
+                                        <option value='eth'>Withdraw ETH</option>
+                                        <option value='mint'>Mint SAP</option>
+                                    </Select>
                             </Flex>
-                        </Flex>
+                                </Flex>
+                            )}/>
                         <Button disabled={isProposing} type="submit" w="100%" colorScheme='pink' mt="5">Submit Proposal</Button>
                     </Form>
                 )}

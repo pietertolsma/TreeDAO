@@ -2,9 +2,10 @@ import sdk from "../scripts/1-initialize-sdk";
 
 import { ethers } from "ethers";
 import { ThirdwebSDK, VoteType } from "@3rdweb/sdk";
-import { SAPLING_ADDRESS, TREEROLE_ADDRESS } from "./constants";
+import { GOVERNANCE_ADDRESS, SAPLING_ADDRESS, TREEROLE_ADDRESS } from "./constants";
 import { saplingAbi } from "./contracts/sapling";
 import { treeRoleAbi } from "./contracts/treerole";
+import { governanceAbi } from "./contracts/governance";
 
 const tokenModule = sdk.getTokenModule(
     "0x5fE4cf831d7E4A23aF72BeBC12622CCdcb32f8DD"
@@ -74,28 +75,47 @@ export const getAllProposals = (callback, err) => {
     .catch((error) => err(error));
 }
 
-export const submitProposal = (account, library, {description, to_address, eth_amount, sapling_amount}, callback, err) => {
-  const signer = library.getSigner(account);
-  const module = new ThirdwebSDK(signer).getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
+const parseCallData = (functionName, signature, parameters) => {
+  let abiCode = [signature]
+  let iface = new ethers.utils.Interface(abiCode);
+  return iface.encodeFunctionData(functionName, parameters);
+}
 
-  const executions = [
-    {
-      toAddress : to_address,
-      nativeTokenValue : eth_amount,
-      transactionData: tokenModule.contract.interface.encodeFunctionData("mint", [
-        module.address,
-        10000
-      ]),
-    },
-  ]
+export const submitProposal = (library, desc, transactions) => {
+  const signer = library.getSigner();
+  const governanceContract = new ethers.Contract(GOVERNANCE_ADDRESS, governanceAbi, signer);
 
-  module.propose(description, executions)
-    .then(() => {
-      callback(true);
-    })
-    .catch((error) => {
-      err("Failed to propose", error);
-    });
+  return new Promise(async (resolve, reject) => {
+
+    let targets = [];
+    let calldatas = []
+    let values = [];
+
+    for (const tx of transactions) {
+      console.log(tx);
+      if (tx.type == 'mint') {
+        targets.push(SAPLING_ADDRESS);
+        values.push(0);
+        calldatas.push(
+          parseCallData("transfer", "function transfer(address to, uint256 amount)", [tx.to, ethers.utils.parseEther(tx.amount.toString())])
+        );
+      } else if (tx.type == 'eth') {
+        targets.push(tx.to);
+        values.push(ethers.utils.parseEther(tx.amount.toString()));
+        calldatas.push(
+          parseCallData("send", "function send(uint256 amount)", [ethers.utils.parseEther(tx.amount.toString())])
+        );
+      } else {
+        reject("Unknown transaction type was found. Invalid proposal!");
+      }
+    }
+
+    const tx = await governanceContract.propose(targets, values, calldatas, desc);
+    const res = await tx.wait();
+    resolve(res.events[0].args[0]);
+
+  });
+
 };
 
 export const mintMembershipNFT = (signer) => {
