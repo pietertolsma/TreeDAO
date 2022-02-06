@@ -16,24 +16,24 @@ import { getProposals } from "./scan";
 
 // const voteModule = sdk.getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
 
-export const submitVotes = (account, library, votes) => {
-  const signer = library.getSigner(account);
-  const module = new ThirdwebSDK(signer).getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
+export const submitVotes = (library, votes) => {
+  const signer = library.getSigner();
+  const governanceContract = new ethers.Contract(GOVERNANCE_ADDRESS, governanceAbi, signer);
 
-  const voteMap = {'For' : VoteType.For, 'Against' : VoteType.Against, 'Abstain' : VoteType.Abstain};
+  const voteMap = {'For' : 1, 'Against' : 0};
 
-  return new Promise((success, reject) => {
+  return new Promise(async (resolve, reject) => {
     for (const vote of votes) {
-      if (vote.currentVote != 'Inactive') {
-        module.vote(vote.id, voteMap[vote.currentVote]);
-      }
+      console.log(vote);
+      governanceContract.castVote(vote.id, voteMap[vote.currentVote]);
     }
 
-    success();
+    resolve();
   })
 }
 
 export const getHasVoted = (proposalId, account, callback, err) => {
+  
   // voteModule.hasVoted(proposalId, account)
   //   .then((res) => callback(res))
   //   .catch((error) => err("Failed to fetch vote status for " + proposalId, error))

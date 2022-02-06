@@ -35,7 +35,7 @@ export default function ProposalList(props) {
 
     const onSubmit = () => {
         setIsVoting(true);
-        submitVotes(account, library, proposals)
+        submitVotes(library, proposals)
             .then(() => {
                 setIsVoting(false);
             })

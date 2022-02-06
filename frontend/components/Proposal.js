@@ -51,7 +51,7 @@ function VoteCard({label, ...props}) {
 
 export default function Proposal({changeVote, proposal, votingPower}) {
 
-    const options = ['For', 'Against', 'Abstain'];
+    const options = ['For', 'Against'];
     const { account } = useWeb3React();
     const wallet = useWallet();
 
