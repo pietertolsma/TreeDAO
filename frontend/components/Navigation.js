@@ -70,6 +70,7 @@ export default function Navigation() {
         <Stack direction="row">
             <Link href="/">Home</Link>
             <Link href="/propose">Propose</Link>
+            <Link href="/delegate">Delegate</Link>
         </Stack>
     )
 
@@ -77,6 +78,7 @@ export default function Navigation() {
       <Stack direction="row">
         <Link href="/">Home</Link>
         <Link href="/propose">Propose</Link>
+        <Link href="/delegate">Delegate</Link>
       </Stack>
     )
 

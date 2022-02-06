@@ -1,5 +1,3 @@
-import sdk from "../scripts/1-initialize-sdk";
-
 import { ethers } from "ethers";
 import { ThirdwebSDK, VoteType } from "@3rdweb/sdk";
 import { GOVERNANCE_ADDRESS, SAPLING_ADDRESS, TREEROLE_ADDRESS } from "./constants";
@@ -8,15 +6,15 @@ import { treeRoleAbi } from "./contracts/treerole";
 import { governanceAbi } from "./contracts/governance";
 import { getProposals } from "./scan";
 
-const tokenModule = sdk.getTokenModule(
-    "0x5fE4cf831d7E4A23aF72BeBC12622CCdcb32f8DD"
-  );
+// const tokenModule = sdk.getTokenModule(
+//     "0x5fE4cf831d7E4A23aF72BeBC12622CCdcb32f8DD"
+//   );
 
-const bundleDropModule = sdk.getBundleDropModule(
-    "0x156E3800528CC8604C77788f9d629D47113479d4",
-  );
+// const bundleDropModule = sdk.getBundleDropModule(
+//     "0x156E3800528CC8604C77788f9d629D47113479d4",
+//   );
 
-const voteModule = sdk.getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
+// const voteModule = sdk.getVoteModule("0xFeBC446D3D76D12b51FCdA642d81a7B8CB7E77bD");
 
 export const submitVotes = (account, library, votes) => {
   const signer = library.getSigner(account);
@@ -36,9 +34,20 @@ export const submitVotes = (account, library, votes) => {
 }
 
 export const getHasVoted = (proposalId, account, callback, err) => {
-  voteModule.hasVoted(proposalId, account)
-    .then((res) => callback(res))
-    .catch((error) => err("Failed to fetch vote status for " + proposalId, error))
+  // voteModule.hasVoted(proposalId, account)
+  //   .then((res) => callback(res))
+  //   .catch((error) => err("Failed to fetch vote status for " + proposalId, error))
+}
+
+export const delegateVotes = (library, to) => {
+  const signer = library.getSigner();
+  const saplingContract = new ethers.Contract(SAPLING_ADDRESS, saplingAbi, signer);
+  return saplingContract.delegate(to);
+}
+
+export const getVotingPower = (provider, address) => {
+  const saplingContract = new ethers.Contract(SAPLING_ADDRESS, saplingAbi, provider);
+  return saplingContract.getVotes(address);
 }
 
 export const getAllProposals = (provider) => {
