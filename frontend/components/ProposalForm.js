@@ -139,7 +139,7 @@ function ProposalForm(props) {
                             </Flex>
                                 </Flex>
                             )}/>
-                        <Button disabled={isProposing} type="submit" w="100%" colorScheme='pink' mt="5">Submit Proposal</Button>
+                        <Button disabled={isProposing || props.disabled} type="submit" w="100%" colorScheme='pink' mt="5">Submit Proposal</Button>
                     </Form>
                 )}
             </Formik>

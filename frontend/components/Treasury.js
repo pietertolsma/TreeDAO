@@ -1,9 +1,11 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Box, Divider, Flex, Heading, Icon, Text } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import useWallet from "../hooks/useWallet";
 import { TIMELOCK_ADDRESS } from "../lib/constants";
 import { getTokens } from "../lib/contract";
+
+import {SiEthereum} from 'react-icons/si'
 
 function Treasury() {
 
@@ -27,11 +29,14 @@ function Treasury() {
     }, []);
 
     return (
-        <Box m="5">
+        <Box m="5" maxWidth="500px" m="0 auto">
             <Heading fontSize="l">Treesury Overview</Heading>
-            <Text>Address: {TIMELOCK_ADDRESS}</Text>
-            <Text>{ethBalance} ETH</Text>
-            <Text>{sapBalance} SAP</Text>
+            <Text fontSize="sm" m="2">Address: {TIMELOCK_ADDRESS}</Text>
+            <Divider />
+            <Flex justifyContent="center" mt="2">
+                <Text fontSize="3xl">{ethBalance} <Icon as={SiEthereum} /></Text>
+                <Text ml="3" fontSize="3xl">{sapBalance} 🌳</Text>
+            </Flex>
         </Box>
     );
 }

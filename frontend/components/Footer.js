@@ -1,16 +1,15 @@
-import { Flex, Link, Stack, Text } from "@chakra-ui/react";
+import { Flex, Icon, Link, Stack, Text } from "@chakra-ui/react";
+import {SiGithub, SiTwitter} from 'react-icons/si'
 
 function Footer() {
     return (
-        <footer>
-        <Flex direction="column" justifyContent={"center"} align="center">
-            <Text>This site was made for education purposes by Pieter Tolsma</Text>
-            <Stack direction="row">
-            <Link href="https://github.com/pietertolsma/TreeDAO">Github</Link>
-            <Link href="https://twitter.com/0xgamut">Twitter</Link>
+        <Flex direction="column" justifyContent={"center"} align="center" height="200px">
+            <Text color="gray.700">This site was made for demonstration purposes by <Link href="https://www.treelabs.io">TreeLabs</Link></Text>
+            <Stack direction="row" m="5" spacing="8">
+                <Link href="https://github.com/pietertolsma/TreeDAO"><Icon w={6} h={6} color="gray.500" as={SiGithub} /></Link>
+                <Link href="https://twitter.com/0xgamut"><Icon w={6} h={6} color="gray.500" as={SiTwitter} /></Link>
             </Stack>
         </Flex>
-        </footer>
     );
 }
 

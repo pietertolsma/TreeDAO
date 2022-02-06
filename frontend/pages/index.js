@@ -33,7 +33,8 @@ export default function Home() {
   const memberView = (
     <Box>
       <Box minHeight="20px">
-        <Heading m="5">TreeDAO</Heading>
+        <Heading m="5">🌳 TreeDAO 🌳</Heading>
+        <Text m="20px auto" maxWidth="800px" align="left" fontSize="xl">TreeDAO demonstrates the inner workings of a DAO. Using <Link href="https://docs.openzeppelin.com/">OpenZeppelin's</Link> contract standards, users can feel safe knowing that the contracts in this dApp are heavily audited.</Text>
       </Box>
       <Treasury />
       <Flex direction={{base: "column", lg: "row"}} justifyContent="space-evenly" m="10" >
@@ -86,13 +87,13 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>TreeDAO</title>
+        <title>🌳 TreeDAO</title>
         <meta name="description" content="TreeDAO" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <Box pt="10" minHeight="100vh" style={backgroundStyle} backgroundColor={disco ? colors[colorIndex] : defaultBackground}>
+        <Box pt="10" pb="10" minHeight="100vh" style={backgroundStyle} backgroundColor={disco ? colors[colorIndex] : defaultBackground}>
           <Box backgroundColor="white" maxWidth="1200px" m="0px auto" textAlign="center">
             {connected}
           </Box>
