@@ -7,4 +7,17 @@ This project consists out of two parts:
 
 Feel free to contribute or use this project as you like!
 
-**Note! This work is still heavily WIP! It currently depends in ThirdWeb, which I am in the progress of getting rid off.**
+**Note! This work is purely meant to showcase some features and is not a finished product! Use at your own risk!**
+
+## Showcase
+
+If you want, you can fork the project and start the server using the following commands:
+```
+npm install
+npm run dev
+```
+
+Also, you can view some screenshots of the TreeDAO below:
+![index page](./img/main_page.png)
+![propose page](./img/propose.png)
+![delegate page](./img/delegate.png)
