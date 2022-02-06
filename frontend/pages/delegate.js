@@ -49,8 +49,8 @@ export default function Delegate() {
                         <Heading align="left" mb="5">Delegate your votes.</Heading>
                         <Text align="left">In order to have voting power, you must delegate your 🌳 Sapling tokens to an address. If you want to delegate to yourself, press the 'delegate to self' button or enter your own address.</Text>
                         
-                        <Text fontSize="xl">Your current voting power is: {currentVotes} 🌳</Text>
-                        <Text fontSize="xl">Your balance is: {tokens} 🌳</Text>
+                        <Text mt="5" fontSize="xl" align="left">Current voting power: {currentVotes} 🌳</Text>
+                        <Text fontSize="xl" align="left">Current balance: {tokens} 🌳</Text>
                         
                         <Button mt="5" colorScheme="pink" disabled={isDelegating} onClick={() => submit(wallet.address)}>Delegate Voting Power to Self</Button>
                         <Text mt="5">or</Text>

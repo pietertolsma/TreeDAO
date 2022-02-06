@@ -13,6 +13,7 @@ import WalletButton from '../components/WalletButton';
 import ProposalList from '../components/ProposalList';
 import VoteButton from '../components/VoteButton';
 import { getTransferEvents } from '../lib/scan';
+import Treasury from '../components/Treasury';
 
 export default function Home() {
 
@@ -34,6 +35,7 @@ export default function Home() {
       <Box minHeight="20px">
         <Heading m="5">TreeDAO</Heading>
       </Box>
+      <Treasury />
       <Flex direction={{base: "column", lg: "row"}} justifyContent="space-evenly" m="10" >
         <Box width={{base: "100%", lg: "50%"}} >
           <Heading fontSize="3xl">Owners</Heading>
