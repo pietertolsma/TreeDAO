@@ -47,7 +47,7 @@ function VoteCard({label, ...props}) {
   }
   
 
-export default function Proposal({changeVote, proposal}) {
+export default function Proposal({changeVote, proposal, votingPower}) {
 
     const options = ['For', 'Against', 'Abstain'];
     const [hasVoted, setHasVoted] = useState(false);
@@ -67,9 +67,9 @@ export default function Proposal({changeVote, proposal}) {
     const group = getRootProps();
 
     const executions = proposal.transactions.map((tx, index) => (
-      <Box key={index} borderWidth="1px" p="3" borderRadius="lg" textAlign='left'>
+      <Box key={index} borderWidth="1px" p="3" textAlign='left'>
         <Text fontSize='xs'>Transaction #{index}</Text>
-        <Text fontSize='xs'>Transfer {tx.amount} {tx.type} to {shortenAddress(tx.to)}</Text>
+        <Text fontSize='xs'>{tx.type == "ETH" ? "Transfer" : "Mint"} {tx.amount} {tx.type} to {shortenAddress(tx.to)}</Text>
       </Box>
     ))
 
@@ -96,12 +96,13 @@ export default function Proposal({changeVote, proposal}) {
 
     return (
         <Box borderWidth="1px" p="3" borderRadius="lg" width="100%" mb="3">
+            <Text fontSize="sm">By {shortenAddress(proposal.proposer)}</Text>
             <Text m="2" fontSize='lg'>{proposal.description}</Text>
             <Flex direction='column'>
               {proposal.transactions.length > 0 ? executions : noExecutions}
             </Flex>
             {hasVoted ? alreadyVoted : voteButtons}
-            <VoteBar votes={proposal.votes} currentVote={hasVoted ? "" : proposal.currentVote}/>
+            <VoteBar votingPower={votingPower} votes={proposal.votes} currentVote={hasVoted ? "" : proposal.currentVote}/>
         </Box>
     )
 }

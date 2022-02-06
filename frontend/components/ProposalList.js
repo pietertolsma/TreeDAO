@@ -2,7 +2,7 @@ import { Box, Text } from "@chakra-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import { useEffect, useState } from "react";
 import useWallet from "../hooks/useWallet";
-import { getAllProposals, submitVotes } from "../lib/contract";
+import { getAllProposals, getVotingPower, submitVotes } from "../lib/contract";
 import Proposal from "./Proposal";
 import VoteButton from "./VoteButton";
 
@@ -10,6 +10,7 @@ export default function ProposalList(props) {
 
     const [proposals, setProposals] = useState([]);
     const [isVoting, setIsVoting] = useState(false);
+    const [votingPower, setVotingPower] = useState(0);
     const { account, library } = useWeb3React();
     const wallet = useWallet();
 
@@ -17,6 +18,10 @@ export default function ProposalList(props) {
         getAllProposals(wallet.provider)
             .then((res) => setProposals(res))
             .catch((reason) => console.error("Something went wrong fetching the proposals..", reason));
+
+        getVotingPower(wallet.provider, wallet.address)
+        .then((res) => setVotingPower(res))
+        .catch((reason) => console.error("Something went wrong fetching the proposals..", reason));
     }, []);
 
     const onSubmit = () => {
@@ -38,7 +43,7 @@ export default function ProposalList(props) {
             setProposals(newProposals);
         }
 
-        return (<Proposal proposal={proposal} key={index} changeVote={changeVote}/>);
+        return (<Proposal votingPower={votingPower} proposal={proposal} key={index} changeVote={changeVote}/>);
     });
 
     const empty = (

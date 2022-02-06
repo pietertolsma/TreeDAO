@@ -2,16 +2,16 @@ import { Box, Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useStore } from "../lib/store";
 
-function VoteBar({votes, currentVote, props}) {
+function VoteBar({votes, currentVote, votingPower, props}) {
 
-    const { totalSupply, tokens } = useStore();
+    const { totalSupply } = useStore();
     const totalVotes = votes.Against + votes.For + votes.Abstain;
 
     const votePercentages = {
-        'For' : (100 * (votes.For + (currentVote === "For" ? tokens : 0)) / totalSupply),
-        'Against' : (100 * (votes.Against + (currentVote === "Against" ? tokens : 0))/ totalSupply),
-        'Abstain' : (100 * (votes.Abstain + (currentVote === "Abstain" ? tokens : 0)) / totalSupply),
-        'NotVoted' : (100 * (totalSupply - totalVotes - tokens) / totalSupply)
+        'For' : (100 * (votes.For + (currentVote === "For" ? votingPower: 0)) / totalSupply),
+        'Against' : (100 * (votes.Against + (currentVote === "Against" ? votingPower : 0))/ totalSupply),
+        'Abstain' : (100 * (votes.Abstain + (currentVote === "Abstain" ? votingPower : 0)) / totalSupply),
+        'NotVoted' : (100 * (totalSupply - totalVotes - votingPower) / totalSupply)
     }
 
     return (
