@@ -1,5 +1,6 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Skeleton, Text } from "@chakra-ui/react";
 import { useWeb3React } from "@web3-react/core";
+import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import useWallet from "../hooks/useWallet";
 import { getAllProposals, getVotingPower, submitVotes } from "../lib/contract";
@@ -8,20 +9,28 @@ import VoteButton from "./VoteButton";
 
 export default function ProposalList(props) {
 
-    const [proposals, setProposals] = useState([]);
-    const [isVoting, setIsVoting] = useState(false);
+    const [ proposals, setProposals] = useState([]);
+    const [ isVoting, setIsVoting] = useState(false);
+    const [ isLoading, setIsLoading ] = useState(true);
     const [votingPower, setVotingPower] = useState(0);
     const { account, library } = useWeb3React();
     const wallet = useWallet();
 
     useEffect(() => {
-        getAllProposals(wallet.provider)
-            .then((res) => setProposals(res))
-            .catch((reason) => console.error("Something went wrong fetching the proposals..", reason));
+        getAllProposals(wallet.provider, account)
+            .then((res) => {
+                setProposals(res)
+                setIsLoading(false);
+            })
+            .catch((reason) => {
+                setIsLoading(false);
+                console.error("Something went wrong fetching the proposals..", reason)
+            });
 
         getVotingPower(wallet.provider, wallet.address)
-        .then((res) => setVotingPower(res))
-        .catch((reason) => console.error("Something went wrong fetching the proposals..", reason));
+            .then((res) => setVotingPower(ethers.utils.formatEther(res)))
+            .catch((reason) => console.error("Something went wrong fetching the proposals..", reason));
+
     }, []);
 
     const onSubmit = () => {
@@ -46,6 +55,14 @@ export default function ProposalList(props) {
         return (<Proposal votingPower={votingPower} proposal={proposal} key={index} changeVote={changeVote}/>);
     });
 
+    const loading = (
+        <Box borderWidth="1px" p="3" borderRadius="lg" width="100%" mb="3">
+            <Skeleton m="2" height="50px" width="420px"/>
+            <Skeleton m="2" height="50px" width="400px"/>
+            <Skeleton m="2" height="50px" width="370px"/>
+        </Box>
+    )
+
     const empty = (
         <Box>
             <Text>There is currently nothing to vote on.</Text>
@@ -54,7 +71,7 @@ export default function ProposalList(props) {
 
     return (
         <Box margin="20px auto" maxWidth="500px">
-            {proposalComponents.length > 0 ? proposalComponents : empty}
+            {isLoading ? loading : proposalComponents.length > 0 ? proposalComponents : empty}
             <VoteButton disabled={isVoting} onClick={() => onSubmit()} width="50%" m="0 auto"/>
         </Box>
     )

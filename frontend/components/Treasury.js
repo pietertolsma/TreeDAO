@@ -29,6 +29,7 @@ function Treasury() {
     return (
         <Box m="5">
             <Heading fontSize="l">Treesury Overview</Heading>
+            <Text>Address: {TIMELOCK_ADDRESS}</Text>
             <Text>{ethBalance} ETH</Text>
             <Text>{sapBalance} SAP</Text>
         </Box>

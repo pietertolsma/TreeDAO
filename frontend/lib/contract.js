@@ -50,9 +50,9 @@ export const getVotingPower = (provider, address) => {
   return saplingContract.getVotes(address);
 }
 
-export const getAllProposals = (provider) => {
+export const getAllProposals = (provider, address) => {
   return new Promise(async (resolve, reject) => {
-    const proposals = await getProposals(provider);
+    const proposals = await getProposals(provider, address);
 
     resolve(proposals);
   });

@@ -1,10 +1,12 @@
-import { Box, Flex, HStack, Radio, RadioGroup, Text, useRadio, useRadioGroup } from "@chakra-ui/react";
+import { Box, Flex, HStack, Radio, RadioGroup, Tag, Text, useRadio, useRadioGroup } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {theme} from '@chakra-ui/theme'
 import { shortenAddress } from "../lib/util";
 import { useWeb3React } from "@web3-react/core";
 import { getHasVoted } from "../lib/contract";
 import VoteBar from "./VoteBar";
+import { ethers } from "ethers";
+import useWallet from "../hooks/useWallet";
 
 
 //https://chakra-ui.com/docs/form/radio
@@ -50,14 +52,14 @@ function VoteCard({label, ...props}) {
 export default function Proposal({changeVote, proposal, votingPower}) {
 
     const options = ['For', 'Against', 'Abstain'];
-    const [hasVoted, setHasVoted] = useState(false);
     const { account } = useWeb3React();
+    const wallet = useWallet();
 
-    useEffect(() => {
-      getHasVoted(proposal.id, account, 
-        (res) => setHasVoted(res),
-        (msg, err) => console.error(msg, err));
-    }, [proposal.id, account])
+    const stateColor = {
+      "Active" : 'green',
+      "Defeated" : 'red',
+      "Succeeded": 'green',
+    }
 
     const { getRootProps, getRadioProps } = useRadioGroup({
         name: 'vote',
@@ -96,13 +98,16 @@ export default function Proposal({changeVote, proposal, votingPower}) {
 
     return (
         <Box borderWidth="1px" p="3" borderRadius="lg" width="100%" mb="3">
-            <Text fontSize="sm">By {shortenAddress(proposal.proposer)}</Text>
+            <Flex justifyContent="space-between">
+              <Text fontSize="sm">By {shortenAddress(proposal.proposer)}</Text>
+              <Tag colorScheme={proposal.state in stateColor ? stateColor[proposal.state] : 'gray'}>{proposal.state}</Tag>
+            </Flex>
             <Text m="2" fontSize='lg'>{proposal.description}</Text>
             <Flex direction='column'>
               {proposal.transactions.length > 0 ? executions : noExecutions}
             </Flex>
-            {hasVoted ? alreadyVoted : voteButtons}
-            <VoteBar votingPower={votingPower} votes={proposal.votes} currentVote={hasVoted ? "" : proposal.currentVote}/>
+            {proposal.hasVoted ? alreadyVoted : voteButtons}
+            <VoteBar votingPower={votingPower} votes={proposal.votes} currentVote={proposal.hasVoted ? "" : proposal.currentVote}/>
         </Box>
     )
 }

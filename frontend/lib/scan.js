@@ -1,5 +1,6 @@
 import { Contract, ethers } from "ethers";
-import { GOVERNANCE_ADDRESS, SAPLING_ADDRESS } from "./constants";
+import { GOVERNANCE_ADDRESS, PROPOSAL_STATE, SAPLING_ADDRESS } from "./constants";
+import { governanceAbi } from "./contracts/governance";
 import { saplingAbi } from "./contracts/sapling";
 
 export const getSaplingOwners = (provider) => {
@@ -48,7 +49,10 @@ const tryDecode = (abi, fn, calldata) => {
     }
 }
 
-export const getProposals = (provider) => {
+export const getProposals = (provider, address) => {
+
+    const governanceContract = new ethers.Contract(GOVERNANCE_ADDRESS, governanceAbi, provider);
+
     return new Promise(async (resolve, reject) => {
         const abi = ["event ProposalCreated(uint proposalId, address proposer, address[] targets, uint[] values, string[] signatures, bytes[] calldatas, uint startBlock, uint endblock, string description)"]
         const contract = new Contract(GOVERNANCE_ADDRESS, abi, provider.getSigner(0))
@@ -67,7 +71,6 @@ export const getProposals = (provider) => {
 
                 let res;
                 if (res = tryDecode(["function transfer(address to, uint256 amount)"], "transfer", cd)) {
-                    console.log(res);
                     transactions.push({
                         "type":  "SAP",
                         "amount" : ethers.utils.formatEther(res.amount),
@@ -84,6 +87,9 @@ export const getProposals = (provider) => {
                 index++;
             }
 
+            const proposalStatus = await governanceContract.state(e.args.proposalId);
+            const hasVoted = await governanceContract.hasVoted(e.args.proposalId, address);
+
             proposals.push({
                 id: e.args.proposalId,
                 description: e.args.description,
@@ -91,6 +97,8 @@ export const getProposals = (provider) => {
                 startBlock: e.args.startBlock,
                 endBlock: e.args.endBlock,
                 targets: e.args.targets,
+                state: PROPOSAL_STATE[proposalStatus],
+                hasVoted,
                 votes: {
                     'Against' : 0,
                     'For' : 0,
